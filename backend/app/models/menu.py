@@ -12,7 +12,7 @@ class DishModel(Base):
     description: Mapped[str] = mapped_column(Text)
     is_available: Mapped[bool] = mapped_column(Boolean, default=True)
 
-    category_id: Mapped[int] = mapped_column(ForeignKey('category.id'))
+    category_id: Mapped[int] = mapped_column(ForeignKey('category.id', ondelete='CASCADE'))
 
     category: Mapped['CategoryModel'] = relationship('CategoryModel', back_populates='dishes')
 
@@ -22,4 +22,4 @@ class CategoryModel(Base):
     name: Mapped[str] = mapped_column(String(50), nullable=False)
     description: Mapped[str] = mapped_column(Text)
 
-    dishes: Mapped[list['DishModel']] = relationship('DishModel', back_populates='category')
+    dishes: Mapped[list['DishModel']] = relationship('DishModel', back_populates='category', cascade='all, delete')
