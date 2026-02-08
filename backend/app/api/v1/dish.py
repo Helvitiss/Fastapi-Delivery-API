@@ -3,7 +3,7 @@ from fastapi import APIRouter, Depends
 
 from app.schemas.dish import Dish, DishCreate, DishUpdate
 from app.core.dependencies import get_dish_service
-from app.services.main_service import DishService
+from app.services.menu import DishService
 
 
 

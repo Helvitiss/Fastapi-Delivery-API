@@ -8,7 +8,7 @@ DB_PATH = BASE_DIR / "db.sqlite3"
 DATABASE_URL = f"sqlite+aiosqlite:///{DB_PATH}"
 
 
-engine = create_async_engine(DATABASE_URL, echo=True)
+engine = create_async_engine(DATABASE_URL)
 
 # Base для декларативного определения моделей
 class Base(DeclarativeBase):

@@ -5,7 +5,7 @@ from fastapi import HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.models import CategoryModel, DishModel
-from app.repositories.main_repos import CategoryRepo, DishRepo
+from app.repositories.menu import CategoryRepository, DishRepository
 from app.schemas.category import CategoryCreate, CategoryUpdate
 from app.schemas.dish import DishCreate, DishUpdate
 
@@ -14,7 +14,7 @@ from app.schemas.dish import DishCreate, DishUpdate
 
 
 class CategoryService:
-    def __init__(self, cat_repo: CategoryRepo):
+    def __init__(self, cat_repo: CategoryRepository):
         self.cat_repo = cat_repo
 
     async def get_all(self) -> Sequence[CategoryModel]:
@@ -46,7 +46,7 @@ class CategoryService:
 
 
 class DishService:
-    def __init__(self, dish_repo: DishRepo, cat_repo: CategoryRepo):
+    def __init__(self, dish_repo: DishRepository, cat_repo: CategoryRepository):
         self.dish_repo = dish_repo
         self.cat_repo = cat_repo
 

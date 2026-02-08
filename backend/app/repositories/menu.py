@@ -6,7 +6,7 @@ from app.schemas.dish import DishCreate, DishUpdate, Dish
 from sqlalchemy import select, delete
 from sqlalchemy.ext.asyncio import AsyncSession
 
-class DishRepo:
+class DishRepository:
     def __init__(self, db: AsyncSession):
         self.db = db
 
@@ -46,7 +46,7 @@ class DishRepo:
         await self.db.commit()
         return dish
 
-class CategoryRepo:
+class CategoryRepository:
     def __init__(self, db: AsyncSession):
         self.db = db
 
