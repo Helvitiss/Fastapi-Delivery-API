@@ -2,7 +2,7 @@ from app.core.dependencies import get_dish_repo, get_category_service
 from app.schemas.category import Category, CategoryCreate
 from fastapi import APIRouter, Depends
 
-from app.services.menu import CategoryService
+from app.services.category import CategoryService
 
 router = APIRouter(prefix="/category", tags=["category"])
 

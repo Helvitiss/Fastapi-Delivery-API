@@ -1,5 +1,6 @@
-from .menu import DishModel, CategoryModel
-from .user import User
+from .dish import DishModel
+from .category import CategoryModel
+from .user import UserModel
 
 
-__all__ = ["DishModel", "CategoryModel", 'User']
+__all__ = ["DishModel", 'UserModel', 'CategoryModel']
