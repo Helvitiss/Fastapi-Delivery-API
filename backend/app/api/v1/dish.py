@@ -2,7 +2,7 @@ from typing import List
 from fastapi import APIRouter, Depends
 
 from app.schemas.dish import Dish, DishCreate, DishUpdate
-from app.core.dependencies import get_dish_service
+from app.core.dependencies.main import get_dish_service
 from app.services.dish import DishService
 
 

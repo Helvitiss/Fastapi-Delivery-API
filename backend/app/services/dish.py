@@ -2,6 +2,7 @@
 from typing import Sequence
 
 from fastapi import HTTPException
+from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.models import DishModel
 from app.repositories.dish import DishRepository
@@ -10,9 +11,9 @@ from app.schemas.dish import DishCreate, DishUpdate
 
 
 class DishService:
-    def __init__(self, dish_repo: DishRepository, cat_repo: CategoryRepository):
-        self.dish_repo = dish_repo
-        self.cat_repo = cat_repo
+    def __init__(self, db: AsyncSession):
+        self.dish_repo = DishRepository(db)
+        self.cat_repo = CategoryRepository(db)
 
     async def get_all(self) -> Sequence[DishModel]:
         result = await self.dish_repo.get_all()

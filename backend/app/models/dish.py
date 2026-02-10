@@ -2,7 +2,6 @@ from app.core.database import Base
 from sqlalchemy import String, Text, Boolean, ForeignKey
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
-from app.models import CategoryModel
 
 
 class DishModel(Base):

@@ -1,4 +1,4 @@
-from app.core.dependencies import get_dish_repo, get_category_service
+from app.core.dependencies.main import  get_category_service
 from app.schemas.category import Category, CategoryCreate
 from fastapi import APIRouter, Depends
 
@@ -29,6 +29,7 @@ async def create_category(category: CategoryCreate,cat_service: CategoryService 
 
     result = await cat_service.create(category)
     return result
+
 
 
 @router.delete("/{category_id}", response_model=Category)
