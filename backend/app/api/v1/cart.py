@@ -17,7 +17,7 @@ async def get_cart(user: UserRead = Depends(get_current_user), cart_service: Car
 
 @router.delete("/")
 async def cart_clear(user: UserRead = Depends(get_current_user), cart_service: CartService = Depends(get_cart_service)):
-    await cart_service.clear_cart(user.id)
+    await cart_service.clear(user.id)
     return 'ok'
 @router.get("/items/")
 async def get_cart_items(user: UserRead = Depends(get_current_user),

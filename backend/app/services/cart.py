@@ -2,6 +2,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.models.cart import CartItemModel, CartModel
 from app.repositories.cart import CartRepository, CartItemRepository
+from app.schemas.cart import CartResponse
 
 
 class CartService:
@@ -16,34 +17,38 @@ class CartService:
             cart = await self.cart_repo.create(user_id=user_id)
         return cart
 
-    async def get_items_by_user_id(self, user_id: int):
-        cart = await self.cart_item_repo.get_all_by_user_id(user_id)
-        items = []
+    async def get_items_by_user_id(self, user_id: int) -> CartResponse:
+
+        cart = await self.get_by_user_id(user_id)
+
+
+        items = await self.cart_item_repo.get_all_by_cart_id(cart.id)
+
+        item_list = []
         total_price = 0
 
 
-        for item in cart.items:
+        for item in items:
 
             total_dish_price = item.dish.price * item.quantity
             total_price += total_dish_price
-            result_item = {'dish_id': item.dish_id,
-                           'name': item.dish.name,
-                           'price': item.dish.price,
+            result_item = {'dish': item.dish,
                            'quantity': item.quantity,
                            'total_dish_price': total_dish_price, }
-            items.append(result_item)
+            item_list.append(result_item)
 
         result = {
             'cart_id': cart.id,
             'total_price': total_price,
-            'items': items,
+            'items': item_list,
         }
 
         return result
 
 
     async def add_dish(self, user_id: int, dish_id: int, quantity: int = 1) -> None:
-        cart = await self.cart_repo.get_by_user_id(user_id)
+
+        cart = await self.get_by_user_id(user_id)
 
 
         cart_item = await self.cart_item_repo.get_by_cart_and_dish(
@@ -64,7 +69,7 @@ class CartService:
         await self.session.commit()
 
     async def update(self, user_id: int, dish_id: int, quantity: int = 1) -> None:
-        cart = await self.cart_repo.get_by_user_id(user_id)
+        cart = await self.get_by_user_id(user_id)
 
         cart_item = await self.cart_item_repo.get_by_cart_and_dish(
             cart.id,
@@ -82,8 +87,8 @@ class CartService:
         await self.update(user_id, dish_id, 0)
 
 
-    async def clear_cart(self, user_id: int) -> None:
-        cart = await self.cart_repo.get_by_user_id(user_id)
+    async def clear(self, user_id: int) -> None:
+        cart = await self.get_by_user_id(user_id)
 
         for item in cart.items:
             await self.cart_item_repo.delete(item)

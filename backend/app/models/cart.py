@@ -16,7 +16,7 @@ class CartModel(Base):
 
 
 class CartItemModel(Base):
-    __tablename__ = 'cart_item'
+    __tablename__ = 'cart_items'
     id: Mapped[int] = mapped_column(primary_key=True)
     cart_id: Mapped[int] = mapped_column(ForeignKey('cart.id'))
     dish_id: Mapped[int] = mapped_column(ForeignKey('dish.id'))

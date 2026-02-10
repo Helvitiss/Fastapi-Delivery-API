@@ -14,3 +14,4 @@ class UserModel(Base):
     is_active: Mapped[bool] = mapped_column(default=True)
 
     cart: Mapped["CartModel"] = relationship("CartModel", back_populates="user")
+    orders: Mapped[list["OrderModel"]] = relationship("OrderModel", back_populates="user")
