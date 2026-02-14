@@ -1,4 +1,4 @@
-from app.core.dependencies.main import  get_category_service
+from app.dependencies import  get_category_service
 from app.schemas.category import Category, CategoryCreate
 from fastapi import APIRouter, Depends
 

@@ -5,8 +5,7 @@ from fastapi import HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.models import DishModel
-from app.repositories.dish import DishRepository
-from app.repositories.category import CategoryRepository
+from app.repositories.menu import DishRepository, CategoryRepository
 from app.schemas.dish import DishCreate, DishUpdate
 
 

@@ -1,5 +1,4 @@
-from .dish import DishModel
-from .category import CategoryModel
+from .menu import CategoryModel, DishModel
 from .user import UserModel
 from .cart import CartItemModel, CartModel
 from .order import OrderModel, OrderItemModel

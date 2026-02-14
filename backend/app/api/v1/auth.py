@@ -1,7 +1,6 @@
 from fastapi import APIRouter, Depends, HTTPException
 
-from app.core.dependencies.auth import get_auth_service, http_bearer, oauth2_scheme, get_current_user
-from app.core.security import decode_token
+from app.dependencies.auth import get_auth_service, get_current_user
 from app.schemas.token import Token
 from app.schemas.user import UserCreate, UserRead
 from app.services.auth import AuthService

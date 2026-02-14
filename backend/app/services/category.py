@@ -4,7 +4,7 @@ from fastapi import HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.models import CategoryModel
-from app.repositories.category import CategoryRepository
+from app.repositories.menu import CategoryRepository
 from app.schemas.category import CategoryCreate, CategoryUpdate
 
 

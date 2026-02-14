@@ -1,8 +1,7 @@
 from fastapi import APIRouter, Depends
-from starlette import status
 
-from app.core.dependencies.main import get_cart_service
-from app.core.dependencies.auth import get_current_user
+from app.dependencies import get_cart_service
+from app.dependencies.auth import get_current_user
 from app.services.cart import CartService
 from app.schemas.user import UserRead
 
