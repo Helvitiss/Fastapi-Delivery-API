@@ -9,7 +9,7 @@ class UserModel(Base):
     __tablename__ = "user"
     id: Mapped[int] = mapped_column(primary_key=True)
     name: Mapped[str] = mapped_column(String(30))
-
+    phone: Mapped[str] = mapped_column(String(20), index=True)
     role: Mapped[UserRole] = mapped_column(default=UserRole.USER)
 
 
