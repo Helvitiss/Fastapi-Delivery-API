@@ -14,7 +14,7 @@ class OrderModel(Base):
     user_id: Mapped[int] = mapped_column(ForeignKey("user.id"))
     address_id: Mapped[int] = mapped_column(ForeignKey("address.id"))
     total_price: Mapped[int] = mapped_column(Integer)
-    comment: Mapped[str] = mapped_column(String(255))
+    comment: Mapped[str | None] = mapped_column(String(255), nullable=True)
 
     status: Mapped[OrderStatus] = mapped_column(
         Enum(OrderStatus),

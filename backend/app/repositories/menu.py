@@ -9,11 +9,10 @@ class CategoryRepository:
     def __init__(self, session: AsyncSession):
         self.session = session
 
-    async def create(self, category: dict) -> CategoryModel:
-        new_category = CategoryModel(**category)
-        self.session.add(new_category)
+    async def create(self, category: CategoryModel) -> CategoryModel:
+        self.session.add(category)
         await self.session.flush()
-        return new_category
+        return category
 
     async def get_all(self) -> list[CategoryModel]:
         result = await self.session.scalars(select(CategoryModel))
@@ -27,12 +26,6 @@ class CategoryRepository:
             raise NotFoundException(f"Category not found: {category_id}")
         return result
 
-    async def update(self, category_id: int, new_category: dict) -> CategoryModel:
-        category = await self.get_by_id(category_id)
-        for k, v in new_category.items():
-            setattr(category, k, v)
-        await self.session.flush()
-        return category
 
     async def delete(self, category_id: int) -> None:
         category = await self.get_by_id(category_id)
@@ -43,11 +36,10 @@ class DishRepository:
     def __init__(self, session: AsyncSession):
         self.session = session
 
-    async def create(self, dish: dict) -> DishModel:
-        new_dish = DishModel(**dish)
-        self.session.add(new_dish)
+    async def create(self, dish: DishModel) -> DishModel:
+        self.session.add(dish)
         await self.session.flush()
-        return new_dish
+        return dish
 
     async def get_by_id(self, dish_id: int) -> DishModel:
         obj = await self.session.execute(select(DishModel).where(DishModel.id == dish_id))
@@ -61,13 +53,6 @@ class DishRepository:
         result = await self.session.scalars(select(DishModel))
         return result.all()
 
-    async def update(self, dish_id: int, new_dish: dict) -> DishModel:
-        dish = await self.get_by_id(dish_id)
-        for k, v in new_dish.items():
-            setattr(dish, k, v)
-
-        await self.session.flush()
-        return dish
 
     async def delete(self, dish_id: int) -> None:
         dish = await self.get_by_id(dish_id)

@@ -27,8 +27,7 @@ class UserRepository:
             raise NotFoundException("User not found")
         return result
 
-    async def create(self, user_data: dict) -> UserModel:
-        user = UserModel(**user_data)
+    async def create(self, user: UserModel) -> UserModel:
         self.db.add(user)
         await self.db.flush()
         return user
