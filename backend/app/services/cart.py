@@ -1,5 +1,6 @@
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from app.core.exceptions import NotFoundException
 from app.models.cart import CartItemModel, CartModel
 from app.repositories.cart import CartRepository, CartItemRepository
 from app.schemas.cart import CartResponse
@@ -12,8 +13,9 @@ class CartService:
         self.cart_item_repo = CartItemRepository(session)
 
     async def get_by_user_id(self, user_id: int) -> CartModel:
-        cart = await self.cart_repo.get_by_user_id(user_id)
-        if not cart:
+        try:
+            cart = await self.cart_repo.get_by_user_id(user_id)
+        except NotFoundException:
             cart = await self.cart_repo.create(user_id=user_id)
         return cart
 
@@ -22,7 +24,7 @@ class CartService:
         cart = await self.get_by_user_id(user_id)
 
 
-        items = await self.cart_item_repo.get_all_by_cart_id(cart.id)
+        items = await self.cart_item_repo.get_card_with_items(cart.id)
 
         item_list = []
         total_price = 0
@@ -51,7 +53,7 @@ class CartService:
         cart = await self.get_by_user_id(user_id)
 
 
-        cart_item = await self.cart_item_repo.get_by_cart_and_dish(
+        cart_item = await self.cart_item_repo.find_by_cart_and_dish(
             cart.id,
             dish_id,
         )
@@ -71,7 +73,7 @@ class CartService:
     async def update(self, user_id: int, dish_id: int, quantity: int = 1) -> None:
         cart = await self.get_by_user_id(user_id)
 
-        cart_item = await self.cart_item_repo.get_by_cart_and_dish(
+        cart_item = await self.cart_item_repo.find_by_cart_and_dish(
             cart.id,
             dish_id,
         )

@@ -1,9 +1,8 @@
-
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.models import DishModel, CategoryModel
-
+from app.core.exceptions import NotFoundException
 
 
 class CategoryRepository:
@@ -16,16 +15,16 @@ class CategoryRepository:
         await self.session.flush()
         return new_category
 
-
     async def get_all(self) -> list[CategoryModel]:
         result = await self.session.scalars(select(CategoryModel))
         return result.all()
 
     async def get_by_id(self, category_id) -> CategoryModel:
-        stmt = select(CategoryModel).where(CategoryModel.id == category_id)
-        result = await self.session.scalar(stmt)
+        obj = await self.session.execute(select(CategoryModel).where(CategoryModel.id == category_id))
+        result = obj.scalar_one_or_none()
+
         if result is None:
-            raise ValueError(f"Category not found: {category_id}")
+            raise NotFoundException(f"Category not found: {category_id}")
         return result
 
     async def update(self, category_id: int, new_category: dict) -> CategoryModel:
@@ -34,7 +33,6 @@ class CategoryRepository:
             setattr(category, k, v)
         await self.session.flush()
         return category
-
 
     async def delete(self, category_id: int) -> None:
         category = await self.get_by_id(category_id)
@@ -51,16 +49,15 @@ class DishRepository:
         await self.session.flush()
         return new_dish
 
-
     async def get_by_id(self, dish_id: int) -> DishModel:
-        stmt = select(DishModel).where(DishModel.id == dish_id)
-        result = await self.session.scalar(stmt)
+        obj = await self.session.execute(select(DishModel).where(DishModel.id == dish_id))
+        result = obj.scalar_one_or_none()
+
         if result is None:
-            raise ValueError(f"Dish not found: {dish_id}")
+            raise NotFoundException(f"Dish not found: {dish_id}")
         return result
 
-
-    async def get_all(self)-> list[DishModel]:
+    async def get_all(self) -> list[DishModel]:
         result = await self.session.scalars(select(DishModel))
         return result.all()
 
@@ -76,4 +73,3 @@ class DishRepository:
         dish = await self.get_by_id(dish_id)
 
         await self.session.delete(dish)
-
