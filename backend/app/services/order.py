@@ -1,6 +1,7 @@
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.models.order import OrderModel, OrderItemModel, OrderStatus
+from app.models.order import OrderModel, OrderItemModel
+from app.models.enums import OrderStatus
 from app.repositories.cart import CartRepository, CartItemRepository
 from app.repositories.order import OrderItemRepository, OrderRepository
 from app.schemas.order import OrderCreate

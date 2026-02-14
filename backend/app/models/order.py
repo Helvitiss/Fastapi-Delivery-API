@@ -1,4 +1,3 @@
-import enum
 from datetime import datetime
 
 from sqlalchemy import ForeignKey, String, Integer, Enum, DateTime, func
@@ -6,25 +5,16 @@ from sqlalchemy import ForeignKey, String, Integer, Enum, DateTime, func
 from app.core.database import Base
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
-class OrderStatus(enum.Enum):
-    new = "new"
-    confirmed = "confirmed"
-    cooking = "cooking"
-    delivering = "delivering"
-    completed = "completed"
-    cancelled = "cancelled"
-
-
-
+from app.models.enums import OrderStatus
 
 
 class OrderModel(Base):
     __tablename__ = "orders"
     id: Mapped[int] = mapped_column(primary_key=True)
-    address: Mapped[str] = mapped_column(String(100))
+    user_id: Mapped[int] = mapped_column(ForeignKey("user.id"))
+    address_id: Mapped[int] = mapped_column(ForeignKey("address.id"))
     total_price: Mapped[int] = mapped_column(Integer)
     comment: Mapped[str] = mapped_column(String(255))
-    user_id: Mapped[int] = mapped_column(ForeignKey("user.id"))
 
     status: Mapped[OrderStatus] = mapped_column(
         Enum(OrderStatus),
@@ -38,6 +28,7 @@ class OrderModel(Base):
 
     user = relationship("UserModel", back_populates="orders")
     items = relationship("OrderItemModel", back_populates="order")
+    address = relationship("AddressModel")
 
 
 
