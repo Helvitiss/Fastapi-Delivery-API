@@ -4,7 +4,6 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
 
 from app.models.cart import CartModel, CartItemModel
-from app.core.exceptions import NotFoundException
 
 class CartRepository:
     def __init__(self, session: AsyncSession):
@@ -29,6 +28,7 @@ class CartRepository:
             pass
 
             return (await self.session.execute(stmt)).scalar_one()
+
 
 
 class CartItemRepository:
@@ -69,6 +69,7 @@ class CartItemRepository:
 
         if item:
             item.quantity += quantity
+            await self.session.flush()
             return item
 
         item = CartItemModel(

@@ -1,9 +1,8 @@
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
 
-from app.core.exceptions import NotFoundException
+from app.core.exceptions import NotFoundError
 from app.models import UserModel
-from app.schemas.user import UserCreate
 
 
 class UserRepository:
@@ -14,8 +13,6 @@ class UserRepository:
     async def get_by_phone(self, phone: str) -> UserModel:
         obj = await self.db.execute(select(UserModel).where(UserModel.phone == phone))
         result = obj.scalar_one_or_none()
-        if result is None:
-            raise NotFoundException("User not found")
         return result
 
 
@@ -24,10 +21,13 @@ class UserRepository:
         obj = await self.db.execute(select(UserModel).where(UserModel.id == user_id))
         result = obj.scalar_one_or_none()
         if result is None:
-            raise NotFoundException("User not found")
+            raise NotFoundError("User not found")
         return result
 
-    async def create(self, user: UserModel) -> UserModel:
+    async def create_with_phone(self, phone_number: str ) -> UserModel:
+        user = UserModel(
+            phone = phone_number,
+        )
         self.db.add(user)
         await self.db.flush()
         return user

@@ -1,42 +1,52 @@
-from logging import getLogger
+import logging
+from datetime import timedelta, datetime, UTC
+
 from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.testing.suite.test_reflection import users
 
-from app.models import UserModel
+from app.core.config import settings
+from app.core.exceptions import BadRequestError
+from app.repositories.auth import AuthRepository
 from app.repositories.user import UserRepository
-from app.core.security import hash_password, verify_password,  create_access_token
-from app.schemas.user import UserCreate
+from app.core.security import create_opt_code, create_access_token
 
-
+logger = logging.getLogger(__name__)
 
 class AuthService:
-    def __init__(self, db: AsyncSession):
-        self.user_repo = UserRepository(db)
-
-
-    async def register(self, user: UserCreate) -> str:
-        existing = await self.user_repo.get_by_email(user.email)
-        if existing is not None:
-
-            raise ValueError("User already exists")
-
-        user = UserModel(name=user.name, email=user.email, hashed_password=hash_password(user.password))
-
-        result = await self.user_repo.create(user)
-
-
-        return create_access_token(str(result.id))
+    def __init__(self, session: AsyncSession):
+        self.session = session
+        self.user_repo = UserRepository(session)
+        self.auth_repo = AuthRepository(session)
 
 
 
-    async def login(self, email: str, password: str) -> str:
-        user_model = await self.user_repo.get_by_email(email)
+    async def request_otp(self, phone_number: str) -> int:
+        code = create_opt_code()
+        logger.info(f'Number: {phone_number},  OTP code: {code}')
+        expires_at = datetime.now(UTC) + timedelta(minutes=settings.OPT_EXPIRE_MINUTES)
+        await self.auth_repo.delete_old_otps(phone_number)
+        await self.auth_repo.create_otp(
+            phone_number=phone_number,
+            code=code,
+            expires_at=expires_at
+        )
+        return int(settings.OPT_EXPIRE_MINUTES)
 
-        if not user_model or not  verify_password(plain_password=password, hashed_password=user_model.hashed_password):
-            raise ValueError("Invalid credentials")
-
-        if not user_model.is_active:
-            raise ValueError("User is not active")
-
-        return create_access_token(str(user_model.id))
 
 
+
+
+    async def verify_otp_and_issue_token(self, phone_number: str, code: str) -> str:
+        now = datetime.now(UTC)
+        otp = await self.auth_repo.get_valid_otp(phone_number, code, now)
+        if otp is None:
+            raise BadRequestError("Invalid OTP or expired")
+
+        await self.auth_repo.delete_old_otps(phone_number)
+        user = await self.user_repo.get_by_phone(phone_number)
+        if user is None:
+            user = await self.user_repo.create_with_phone(phone_number)
+
+        return create_access_token(
+            subject=str(user.id)
+        )

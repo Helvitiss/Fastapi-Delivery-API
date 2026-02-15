@@ -1,9 +1,8 @@
-from typing import Any, Coroutine, Sequence
 
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
 
-from app.core.exceptions import NotFoundException
+from app.core.exceptions import NotFoundError
 from app.models import OrderModel, OrderItemModel
 
 
@@ -16,14 +15,20 @@ class OrderRepository:
         await self.session.flush()
         return order
 
+    async def create_item(self, item: OrderItemModel) -> OrderItemModel:
+        self.session.add(item)
+        await self.session.flush()
+        return item
+
     async def get_by_id(self, order_id: int) -> OrderModel:
         obj = await self.session.execute(
             select(OrderModel).where(OrderModel.id == order_id)
         )
         result = obj.scalar_one_or_none()
         if result is None:
-            raise NotFoundException('Order not found')
+            raise NotFoundError('Order not found')
         return result
+
 
     async def get_user_orders(self, user_id: int) -> list[OrderModel]:
         result = await self.session.scalars(
@@ -32,7 +37,6 @@ class OrderRepository:
         return result.all()
 
 
-    async def create_item(self, item: OrderItemModel) -> OrderItemModel:
-        self.session.add(item)
-        await self.session.flush()
-        return item
+    async def get_all_orders(self):
+        ...
+        #todo отображение всех заказов для админки

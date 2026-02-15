@@ -1,21 +1,18 @@
-from pydantic import BaseModel, Field, EmailStr
+from pydantic import BaseModel
 
 
 class UserCreate(BaseModel):
     name: str
-    email: EmailStr
-    password: str
-
+    phone: str
 
 class UserRead(BaseModel):
     id: int
     name: str
-    email: EmailStr
+    phone: str
 
     model_config = {
         "from_attributes": True,
     }
 
 class UserUpdate(UserCreate):
-    email: str | None
-    password: str | None
+    name: str

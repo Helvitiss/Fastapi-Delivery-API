@@ -7,13 +7,13 @@ from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 class CartModel(Base):
     __tablename__ = 'cart'
-    __table_args__ = (UniqueConstraint("user_id"))
+    __table_args__ = (UniqueConstraint("user_id"),)
     id: Mapped[int] = mapped_column(primary_key=True)
     user_id: Mapped[int] = mapped_column(ForeignKey('user.id'))
 
 
     user: Mapped["UserModel"] = relationship("UserModel", back_populates="cart")
-    items: Mapped[list['CartItem']] = relationship("CartItemModel", back_populates="cart", cascade="all, delete-orphan")
+    items: Mapped[list['CartItemModel']] = relationship("CartItemModel", back_populates="cart", cascade="all, delete-orphan")
 
 
 class CartItemModel(Base):

@@ -1,56 +1,61 @@
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.models.order import OrderModel, OrderItemModel
-from app.models.enums import OrderStatus
+from app.core.exceptions import BadRequestError
+from app.models import OrderModel, OrderItemModel
 from app.repositories.cart import CartRepository, CartItemRepository
-from app.repositories.order import OrderItemRepository, OrderRepository
-from app.schemas.order import OrderCreate
-from app.services.cart import CartService
+from app.repositories.order import OrderRepository
 
 
 class OrderService:
-    def __init__(
-        self,
-        session: AsyncSession,
-        order_repo: OrderRepository,
-        order_item_repo: OrderItemRepository,
-        cart_service: CartService,
-
-    ):
+    def __init__(self, session: AsyncSession):
         self.session = session
-        self.order_repo = order_repo
-        self.order_item_repo = order_item_repo
-        self.cart_service = cart_service
-    async def create_from_cart(self, user_id: int, order: OrderCreate):
-        async with self.session.begin():
-            cart_with_items = await self.cart_service.get_items_by_user_id(user_id)
-            if not cart_with_items.items:
-                raise ValueError('Cart is empty')
-            order_model = OrderModel(
-                address=order.address,
-                total_price=cart_with_items.total_price,
-                comment=order.comment,
-                user_id=user_id,
+        self.order_repo = OrderRepository(session)
+        self.cart_repo = CartRepository(session)
+        self.cart_item_repo = CartItemRepository(session)
+
+    async def create_order(self, user_id: int, address_id: int, comment:str | None = None) -> OrderModel:
+
+        cart = await self.cart_repo.get_or_create_by_user_id(user_id)
+        items = await self.cart_item_repo.get_all_with_info(cart.id)
+        if cart is None or not items:
+            raise BadRequestError('Cart is empty')
+
+        total_price = 0
+        for item in items:
+            total_price += item.dish.price * item.quantity
+
+
+        order = OrderModel(
+            user_id = user_id,
+            address_id = address_id,
+            total_price=total_price,
+            comment = comment
+        )
+        await self.order_repo.create(order)
+
+        for item in items:
+            order_item = OrderItemModel(
+                order_id = order.id,
+                dish_id=item.dish.id,
+                quantity=item.quantity,
+                price=item.dish.price,
+                dish_name=item.dish.name,
             )
-            order = await self.order_repo.create(order_model)
+            await self.order_repo.create_item(order_item)
+            await self.cart_item_repo.delete(item)
+        return order
 
-            for item in cart_with_items.items:
-                order_item_model = OrderItemModel(
-                    order_id=order.id,
-                    dish_id=item.dish_id,
-                    quantity=item.quantity,
-                    price=item.price,
-
-                )
-                await self.order_item_repo.create(order_item_model)
-
-            await self.cart_service.clear(user_id)
-
-    async def get_by_order_id(self, user_id: int, order_id: int):
+    async def get_order_by_id(self):
         ...
 
-    async def get_all_orders_by_user_id(self, user_id: int):
+    async def get_all_user_orders(self):
         ...
 
 
+    async def get_all_orders(self):
+        ...
 
+
+    async def update_status(self):
+        ...
+        #todo реализовать изменение статуса заказа

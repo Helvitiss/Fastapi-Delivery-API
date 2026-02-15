@@ -1,6 +1,6 @@
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.core.exceptions import NotFoundException
+from app.core.exceptions import NotFoundError
 from app.models.cart import CartItemModel, CartModel
 from app.repositories.cart import CartRepository, CartItemRepository
 from app.schemas.cart import CartResponse
@@ -12,19 +12,21 @@ class CartService:
         self.cart_repo = CartRepository(session)
         self.cart_item_repo = CartItemRepository(session)
 
-    async def get_by_user_id(self, user_id: int) -> CartModel:
-        try:
-            cart = await self.cart_repo.get_by_user_id(user_id)
-        except NotFoundException:
-            cart = await self.cart_repo.create(user_id=user_id)
-        return cart
+
+
+
+
+    async def get_or_create_by_user_id(self, user_id: int) -> CartModel:
+        result = await self.cart_repo.get_or_create_by_user_id(user_id)
+        return result
+
 
     async def get_items_by_user_id(self, user_id: int) -> CartResponse:
 
-        cart = await self.get_by_user_id(user_id)
+        cart = await self.get_or_create_by_user_id(user_id)
 
 
-        items = await self.cart_item_repo.get_card_with_items(cart.id)
+        items = await self.cart_item_repo.get_all_with_info(cart.id)
 
         item_list = []
         total_price = 0
@@ -48,41 +50,36 @@ class CartService:
         return result
 
 
+
+
+
     async def add_dish(self, user_id: int, dish_id: int, quantity: int = 1) -> None:
 
-        cart = await self.get_by_user_id(user_id)
+        cart = await self.get_or_create_by_user_id(user_id)
 
-
-        cart_item = await self.cart_item_repo.find_by_cart_and_dish(
-            cart.id,
-            dish_id,
+        item = await self.cart_item_repo.add_item_to_cart(
+            cart_id=cart.id,
+            dish_id=dish_id,
+            quantity=quantity,
         )
+        #todo надо понять что возвращать при добавлении и надо ли
 
-        if cart_item:
-            cart_item.quantity += quantity
-        else:
-            cart_item = CartItemModel(
-                cart_id=cart.id,
-                dish_id=dish_id,
-                quantity=quantity,
-            )
-            await self.cart_item_repo.add(cart_item)
-
-        await self.session.commit()
 
     async def update(self, user_id: int, dish_id: int, quantity: int = 1) -> None:
-        cart = await self.get_by_user_id(user_id)
+        cart = await self.get_or_create_by_user_id(user_id)
 
         cart_item = await self.cart_item_repo.find_by_cart_and_dish(
             cart.id,
             dish_id,
         )
+        if cart_item is None:
+            raise NotFoundError("Item not found")
+
         if quantity == 0:
             if cart_item:
                 await self.cart_item_repo.delete(cart_item)
         else:
             cart_item.quantity = quantity
-        await self.session.commit()
 
 
     async def remove_dish(self, user_id: int, dish_id: int) -> None:
@@ -90,9 +87,8 @@ class CartService:
 
 
     async def clear(self, user_id: int) -> None:
-        cart = await self.get_by_user_id(user_id)
+        cart = await self.get_or_create_by_user_id(user_id)
 
         for item in cart.items:
             await self.cart_item_repo.delete(item)
 
-        await self.session.commit()

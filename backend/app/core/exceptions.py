@@ -2,9 +2,13 @@
 
 
 
-class BaseRepoException(Exception):
+class BaseAppError(Exception):
     pass
 
 
-class NotFoundException(BaseRepoException):
+class NotFoundError(BaseAppError):
+    pass
+
+
+class BadRequestError(BaseAppError):
     pass

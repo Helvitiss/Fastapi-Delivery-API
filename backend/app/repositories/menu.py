@@ -2,7 +2,7 @@ from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.models import DishModel, CategoryModel
-from app.core.exceptions import NotFoundException
+from app.core.exceptions import NotFoundError
 
 
 class CategoryRepository:
@@ -23,12 +23,11 @@ class CategoryRepository:
         result = obj.scalar_one_or_none()
 
         if result is None:
-            raise NotFoundException(f"Category not found: {category_id}")
+            raise NotFoundError(f"Category not found: {category_id}")
         return result
 
 
-    async def delete(self, category_id: int) -> None:
-        category = await self.get_by_id(category_id)
+    async def delete(self, category: CategoryModel) -> None:
         await self.session.delete(category)
 
 
@@ -46,7 +45,7 @@ class DishRepository:
         result = obj.scalar_one_or_none()
 
         if result is None:
-            raise NotFoundException(f"Dish not found: {dish_id}")
+            raise NotFoundError(f"Dish not found: {dish_id}")
         return result
 
     async def get_all(self) -> list[DishModel]:
