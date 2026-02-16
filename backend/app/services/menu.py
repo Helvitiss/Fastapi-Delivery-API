@@ -38,7 +38,7 @@ class MenuService:
 
 
     async def delete_category(self, category_id: int) -> None:
-        category = self.category_repo.get_by_id(category_id)
+        category = await self.category_repo.get_by_id(category_id)
         await self.session.delete(category)
 
 
