@@ -1,14 +1,11 @@
-from idlelib.window import add_windows_to_menu
 
 from fastapi import APIRouter, Depends, HTTPException
 
 from app.core.exceptions import BadRequestError
-from app.dependencies.auth import get_auth_service, get_current_user
+from app.dependencies.auth import get_auth_service
 from app.schemas.auth import OTPSentResponse, TokenResponse, OTPVerifyRead
-from app.schemas.token import Token
-from app.schemas.user import UserCreate, UserRead
+
 from app.services.auth import AuthService
-from fastapi.security import OAuth2PasswordRequestForm
 
 router = APIRouter(prefix="/auth", tags=["user: auth"])
 

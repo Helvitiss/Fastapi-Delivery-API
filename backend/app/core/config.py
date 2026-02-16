@@ -21,7 +21,7 @@ class Settings(BaseSettings):
 
 
 logging.basicConfig(
-    level=logging.INFO,
+    level=logging.DEBUG,
     format=LOG_FORMAT
 )
 

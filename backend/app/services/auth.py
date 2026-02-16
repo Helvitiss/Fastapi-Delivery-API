@@ -2,13 +2,11 @@ import logging
 from datetime import timedelta, datetime, UTC
 
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy.testing.suite.test_reflection import users
-
 from app.core.config import settings
 from app.core.exceptions import BadRequestError
 from app.repositories.auth import AuthRepository
 from app.repositories.user import UserRepository
-from app.core.security import create_opt_code, create_access_token
+from app.core.security import create_otp_code, create_access_token
 
 logger = logging.getLogger(__name__)
 
@@ -21,8 +19,8 @@ class AuthService:
 
 
     async def request_otp(self, phone_number: str) -> int:
-        code = create_opt_code()
-        logger.info(f'Number: {phone_number},  OTP code: {code}')
+        code = create_otp_code()
+        logger.debug(f'Number: {phone_number}  OTP code: {code}')
         expires_at = datetime.now(UTC) + timedelta(minutes=settings.OPT_EXPIRE_MINUTES)
         await self.auth_repo.delete_old_otps(phone_number)
         await self.auth_repo.create_otp(

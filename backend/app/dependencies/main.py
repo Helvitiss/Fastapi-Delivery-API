@@ -35,5 +35,5 @@ async def get_cart_service(session: AsyncSession = Depends(get_async_db)):
     return CartService(session)
 
 
-async def get_order_servise(session: AsyncSession = Depends(get_async_db)):
+async def get_order_service(session: AsyncSession = Depends(get_async_db)):
     return OrderService(session)

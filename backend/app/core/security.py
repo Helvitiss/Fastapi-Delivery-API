@@ -13,7 +13,7 @@ pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
 
 
-def create_opt_code():
+def create_otp_code():
     return f"{randint(0, 999999):06d}"
 
 
