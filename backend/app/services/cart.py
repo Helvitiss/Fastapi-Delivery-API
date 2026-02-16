@@ -3,7 +3,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.core.exceptions import NotFoundError
 from app.models.cart import CartItemModel, CartModel
 from app.repositories.cart import CartRepository, CartItemRepository
-from app.schemas.cart import CartResponse
+from app.schemas.cart import CartRead
 
 
 class CartService:
@@ -21,7 +21,7 @@ class CartService:
         return result
 
 
-    async def get_items_by_user_id(self, user_id: int) -> CartResponse:
+    async def get_items_by_user_id(self, user_id: int) -> CartRead:
 
         cart = await self.get_or_create_by_user_id(user_id)
 
@@ -53,7 +53,7 @@ class CartService:
 
 
 
-    async def add_dish(self, user_id: int, dish_id: int, quantity: int = 1) -> None:
+    async def add_dish(self, user_id: int, dish_id: int, quantity: int = 1) -> CartItemModel:
 
         cart = await self.get_or_create_by_user_id(user_id)
 
@@ -62,8 +62,7 @@ class CartService:
             dish_id=dish_id,
             quantity=quantity,
         )
-        #todo надо понять что возвращать при добавлении и надо ли
-
+        return item
 
     async def update(self, user_id: int, dish_id: int, quantity: int = 1) -> None:
         cart = await self.get_or_create_by_user_id(user_id)

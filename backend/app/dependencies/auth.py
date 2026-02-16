@@ -7,6 +7,9 @@ from app.models import UserModel
 from app.services.auth import AuthService
 from app.core.security import decode_token
 from app.repositories.user import UserRepository
+from app.models.enums import UserRole
+
+
 http_bearer = HTTPBearer()
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/user/login")
 
@@ -25,3 +28,6 @@ async def get_current_user(bearer = Depends(http_bearer), db = Depends(get_async
     return user
 
 
+async def is_admin(user: UserModel = Depends(get_current_user)):
+    if user.role != UserRole.ADMIN:
+        raise HTTPException(status_code=403, detail="Forbidden")

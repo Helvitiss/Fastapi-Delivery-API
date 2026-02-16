@@ -1,11 +1,10 @@
-from typing import Optional
 
 from pydantic import BaseModel, Field, ConfigDict
 
 
 class CategoryBase(BaseModel):
     name: str = Field(..., description="Название категории")
-    description: Optional[str] = Field(None, description="Описание категории")
+    description: str | None = Field(None, description="Описание категории")
 
 
 class CategoryCreate(CategoryBase):
@@ -13,11 +12,11 @@ class CategoryCreate(CategoryBase):
 
 
 class CategoryUpdate(BaseModel):
-    name: Optional[str] = Field(None, description="Название категории")
-    description: Optional[str] = Field(None, description="Описание категории")
+    name: str | None = Field(None, description="Название категории")
+    description: str | None = Field(None, description="Описание категории")
 
 
-class Category(CategoryBase):
+class CategoryRead(CategoryBase):
     id: int = Field(..., description="ID категории")
 
     model_config = ConfigDict(from_attributes=True)

@@ -10,7 +10,7 @@ LOG_FORMAT = "%(asctime)s | %(levelname)s | %(name)s | %(message)s"
 class Settings(BaseSettings):
     SECRET_KEY: str
     ALGORITHM: str = "HS256"
-    ACCESS_TOKEN_EXPIRE_MINUTES: int = 30
+    ACCESS_TOKEN_EXPIRE_MINUTES: int = 60 * 24
     OPT_EXPIRE_MINUTES: int = 5
 
 

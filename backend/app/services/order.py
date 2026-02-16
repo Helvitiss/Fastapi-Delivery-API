@@ -4,6 +4,7 @@ from app.core.exceptions import BadRequestError
 from app.models import OrderModel, OrderItemModel
 from app.repositories.cart import CartRepository, CartItemRepository
 from app.repositories.order import OrderRepository
+from app.schemas.order import OrderStatusSchema
 
 
 class OrderService:
@@ -45,17 +46,19 @@ class OrderService:
             await self.cart_item_repo.delete(item)
         return order
 
-    async def get_order_by_id(self):
-        ...
+    async def get_order_by_id_and_user(self, order_id: int, user_id: int) -> OrderModel:
+        return await self.order_repo.get_by_id_and_user(order_id, user_id)
 
-    async def get_all_user_orders(self):
-        ...
+    async def get_order_by_id(self, order_id: int) -> OrderModel:
+        return await self.order_repo.get_by_id(order_id)
+
+    async def get_all_user_orders(self, user_id: int) -> list[OrderModel]:
+        return await self.order_repo.get_user_orders(user_id=user_id)
 
 
     async def get_all_orders(self):
-        ...
+        return await self.order_repo.get_all_orders()
 
 
-    async def update_status(self):
-        ...
-        #todo реализовать изменение статуса заказа
+    async def update_status(self, order_id: int, schema: OrderStatusSchema) -> OrderModel:
+        return await self.order_repo.update_status(order_id, schema.status)
