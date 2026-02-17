@@ -16,7 +16,7 @@ class DishCreate(DishBase):
 
 class DishRead(DishBase):
     id: int = Field(..., description="ID блюда")
-    image_path: str | None = Field(None,description='Путь к фото блюда')
+    image_url: str | None = Field(None,description='Путь к фото блюда')
 
     model_config = ConfigDict(from_attributes=True)
 

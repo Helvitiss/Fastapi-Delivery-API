@@ -12,7 +12,7 @@ class DishModel(Base):
     description: Mapped[str] = mapped_column(Text)
     weight: Mapped[int | None] = mapped_column(nullable=True)
     is_available: Mapped[bool | None] = mapped_column(Boolean, default=True)
-    image_path: Mapped[str | None] = mapped_column(nullable=True)
+    image_url: Mapped[str | None] = mapped_column(nullable=True)
 
 
     category_id: Mapped[int] = mapped_column(ForeignKey('category.id', ondelete='CASCADE'))

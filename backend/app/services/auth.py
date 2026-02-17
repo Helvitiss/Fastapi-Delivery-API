@@ -20,7 +20,7 @@ class AuthService:
 
     async def request_otp(self, phone_number: str) -> int:
         code = create_otp_code()
-        logger.debug(f'Number: {phone_number}  OTP code: {code}')
+        logger.info(f'Number: {phone_number}   OTP code: {code}')
         expires_at = datetime.now(UTC) + timedelta(minutes=settings.OPT_EXPIRE_MINUTES)
         await self.auth_repo.delete_old_otps(phone_number)
         await self.auth_repo.create_otp(
