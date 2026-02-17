@@ -24,6 +24,9 @@ class OrderService:
         total_price = 0
         for item in items:
             total_price += item.dish.price * item.quantity
+            if not item.dish.is_available:
+                raise BadRequestError(f'Item {item.dish.name} is not available')
+
 
 
         order = OrderModel(

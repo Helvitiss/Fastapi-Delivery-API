@@ -8,6 +8,18 @@ from app.services.dish import DishService
 
 router = APIRouter(prefix="/dishes", tags=["admin: dishes"])
 
+@router.get('/', response_model=list[DishRead])
+async def list_all_dishes(menu_service: DishService = Depends(get_dish_service)):
+    return await menu_service.get_list_dishes(include_inactive=True)
+
+
+@router.get('/{dish_id}', response_model=DishRead)
+async def retrieve_dish(dish_id: int, menu_service: DishService = Depends(get_dish_service)):
+
+    return await menu_service.get_dish_by_id(dish_id, include_inactive=True)
+
+
+
 
 @router.post('/', response_model=DishRead, status_code=201)
 async def create_dish(dish: DishCreate, menu_service: DishService = Depends(get_dish_service)):

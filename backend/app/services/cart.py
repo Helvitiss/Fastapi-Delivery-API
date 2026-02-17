@@ -3,6 +3,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.core.exceptions import NotFoundError
 from app.models.cart import CartItemModel, CartModel
 from app.repositories.cart import CartRepository, CartItemRepository
+from app.repositories.dish import DishRepository
 from app.schemas.cart import CartRead
 
 
@@ -11,7 +12,7 @@ class CartService:
         self.session = session
         self.cart_repo = CartRepository(session)
         self.cart_item_repo = CartItemRepository(session)
-
+        self.dish_repo = DishRepository(session)
 
 
 
@@ -56,6 +57,7 @@ class CartService:
     async def add_dish(self, user_id: int, dish_id: int, quantity: int = 1) -> CartItemModel:
 
         cart = await self.get_or_create_by_user_id(user_id)
+        await self.dish_repo.get_by_id(dish_id)
 
         item = await self.cart_item_repo.add_item_to_cart(
             cart_id=cart.id,
