@@ -3,47 +3,23 @@ from logging import getLogger
 from fastapi import UploadFile
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.models import CategoryModel, DishModel
-from app.repositories.menu import DishRepository, CategoryRepository
-from app.schemas.category import CategoryCreate, CategoryUpdate
+from app.models import DishModel
+from app.repositories.category import CategoryRepository
+from app.repositories.dish import DishRepository
 from app.schemas.dish import DishCreate, DishUpdate
-from .storage import LocalStorageService
+from app.services.storage import LocalStorageService
 
 
-class MenuService:
+class DishService:
     def __init__(self, session: AsyncSession):
         self.session = session
         self.dish_repo = DishRepository(session)
         self.category_repo = CategoryRepository(session)
         self.storage_service = LocalStorageService()
 
-    async def create_category(self, category_schema: CategoryCreate) -> CategoryModel:
-        category_model = CategoryModel(**category_schema.model_dump())
-        category = await self.category_repo.create(category_model)
-        return category
 
-    async def get_all_categories(self) -> list[CategoryModel]:
-        categories = await self.category_repo.get_all()
-        return categories
-
-    async def get_category_by_id(self, category_id: int) -> CategoryModel:
-        category_model = await self.category_repo.get_by_id(category_id)
-        return category_model
-
-    async def update_category(self, category_id: int, category_schema: CategoryUpdate) -> CategoryModel:
-        category = await self.get_category_by_id(category_id)
-
-        for k, v in category_schema.model_dump(exclude_unset=True).items():
-            setattr(category, k, v)
-
-        return category
-
-    async def delete_category(self, category_id: int) -> None:
-        category = await self.category_repo.get_by_id(category_id)
-        await self.session.delete(category)
-
-    async def get_dish_by_id(self, dish_id: int) -> DishModel:
-        dish = await self.dish_repo.get_by_id(dish_id)
+    async def get_dish_by_id(self, dish_id: int, include_inactive=False) -> DishModel:
+        dish = await self.dish_repo.get_by_id(dish_id, include_inactive=include_inactive)
         return dish
 
     async def create_dish(self, dish_schema: DishCreate) -> DishModel:
@@ -80,6 +56,6 @@ class MenuService:
 
         await self.session.delete(dish)
 
-    async def get_list_dishes(self) -> list[DishModel]:
-        dishes = await self.dish_repo.get_all()
+    async def get_list_dishes(self, include_inactive=False) -> list[DishModel]:
+        dishes = await self.dish_repo.get_all(include_inactive)
         return dishes
