@@ -52,9 +52,7 @@ class DishService:
         return dish
 
     async def delete_dish(self, dish_id: int) -> None:
-        dish = self.dish_repo.get_by_id(dish_id)
-
-        await self.session.delete(dish)
+        await self.dish_repo.delete(dish_id)
 
     async def get_list_dishes(self, include_inactive=False) -> list[DishModel]:
         dishes = await self.dish_repo.get_all(include_inactive)

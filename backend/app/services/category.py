@@ -32,5 +32,4 @@ class CategoryService:
         return category
 
     async def delete_category(self, category_id: int) -> None:
-        category = await self.category_repo.get_by_id(category_id)
-        await self.session.delete(category)
+        await self.category_repo.delete(category_id)

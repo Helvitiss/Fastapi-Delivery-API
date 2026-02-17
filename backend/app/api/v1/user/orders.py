@@ -30,7 +30,7 @@ async def create_order(address_id: int,
                        user: UserModel = Depends(get_current_user),
                        order_service: OrderService = Depends(get_order_service)):
     try:
-        await order_service.create_order(user.id, address_id)
+        return await order_service.create_order(user.id, address_id)
     except BadRequestError as e:
         raise HTTPException(status_code=400, detail=e.__str__())
 

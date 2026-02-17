@@ -9,10 +9,6 @@ from random import randint
 
 
 
-pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
-
-
-
 def create_otp_code():
     return f"{randint(0, 999999):06d}"
 
@@ -34,11 +30,7 @@ def create_access_token(subject: str) -> str:
     )
 
 def decode_token(token: str) -> dict:
-    try:
-        decoded = jwt.decode(token, settings.SECRET_KEY)
-        return decoded
-    except JWTError:
-        raise HTTPException(
-            status_code=401,
-            detail="Invalid or expired token"
-        )
+
+    decoded = jwt.decode(token, settings.SECRET_KEY, algorithms=[settings.ALGORITHM])
+    return decoded
+

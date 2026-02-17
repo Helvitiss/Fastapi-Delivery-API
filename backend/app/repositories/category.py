@@ -27,5 +27,6 @@ class CategoryRepository:
         return result
 
 
-    async def delete(self, category: CategoryModel) -> None:
+    async def delete(self, category_id: int) -> None:
+        category = await self.get_by_id(category_id)
         await self.session.delete(category)

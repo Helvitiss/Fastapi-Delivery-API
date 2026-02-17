@@ -64,7 +64,6 @@ class CartItemRepository:
             dish_id: int,
             quantity: int = 1,
     ) -> CartItemModel:
-        ...
         item = await self.find_by_cart_and_dish(cart_id, dish_id)
 
         if item:
