@@ -1,12 +1,10 @@
 from fastapi import APIRouter, HTTPException
 from fastapi.params import Depends
-from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.exceptions import BadRequestError
 from app.dependencies.auth import get_current_user
-from app.dependencies.main import get_order_service, get_async_db
-from app.models import UserModel, AddressModel
-from app.schemas.address import AddressCreate
+from app.dependencies.main import get_order_service
+from app.models import UserModel
 from app.services.order import OrderService
 
 router = APIRouter(prefix="/orders", tags=["user: orders"])
@@ -33,11 +31,5 @@ async def create_order(address_id: int,
         return await order_service.create_order(user.id, address_id)
     except BadRequestError as e:
         raise HTTPException(status_code=400, detail=e.__str__())
-
-@router.post('/address')
-async def create_address(data: AddressCreate, session: AsyncSession = Depends(get_async_db),
-                         user: UserModel = Depends(get_current_user)):
-    address = AddressModel(user_id=user.id, **data.model_dump())
-    session.add(address)
 
 

@@ -6,7 +6,7 @@ from pydantic import BaseModel
 
 
 
-class Address(BaseModel):
+class AddressResponse(BaseModel):
     id: int
     address: str
     user_id: int
