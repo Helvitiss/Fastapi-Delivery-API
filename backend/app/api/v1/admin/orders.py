@@ -12,7 +12,7 @@ from app.services.order import OrderService
 router = APIRouter(prefix="/orders", tags=["admin: orders"])
 
 
-@router.get("/list_all")
+@router.get("/")
 async def list_orders(user: UserModel = Depends(get_current_user),
                       order_service: OrderService = Depends(get_order_service)):
     return await order_service.get_all_orders()

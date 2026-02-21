@@ -10,29 +10,30 @@ from app.core.security import create_otp_code, create_access_token
 
 logger = logging.getLogger(__name__)
 
+
 class AuthService:
     def __init__(self, session: AsyncSession):
         self.session = session
         self.user_repo = UserRepository(session)
         self.auth_repo = AuthRepository(session)
 
-
-
     async def request_otp(self, phone_number: str) -> int:
         code = create_otp_code()
+
+        # Чисто решение для разработки, чтобы проверять работу авторизацию.
+        # Потом надо подключить это все к сервису отправки смс
         logger.info(f'Number: {phone_number}   OTP code: {code}')
-        expires_at = datetime.now(UTC) + timedelta(minutes=settings.OPT_EXPIRE_MINUTES)
+
+
+        expires_at = datetime.now(UTC) + timedelta(minutes=settings.OTP_EXPIRE_MINUTES)
+
         await self.auth_repo.delete_old_otps(phone_number)
         await self.auth_repo.create_otp(
             phone_number=phone_number,
             code=code,
             expires_at=expires_at
         )
-        return int(settings.OPT_EXPIRE_MINUTES)
-
-
-
-
+        return int(settings.OTP_EXPIRE_MINUTES)
 
     async def verify_otp_and_issue_token(self, phone_number: str, code: str) -> str:
         now = datetime.now(UTC)

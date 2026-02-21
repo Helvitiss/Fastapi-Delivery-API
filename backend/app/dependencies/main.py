@@ -30,11 +30,6 @@ async def get_dish_service(session: AsyncSession = Depends(get_async_db)):
 async def get_category_service(session: AsyncSession = Depends(get_async_db)):
     return CategoryService(session)
 
-
-async def get_auth_service(session: AsyncSession = Depends(get_async_db)):
-    return AuthService(session)
-
-
 async def get_cart_service(session: AsyncSession = Depends(get_async_db)):
     return CartService(session)
 

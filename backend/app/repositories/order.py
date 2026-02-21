@@ -21,6 +21,10 @@ class OrderRepository:
         await self.session.flush()
         return item
 
+    async def create_items(self, items: list[OrderItemModel]):
+        self.session.add_all(items)
+        await self.session.flush()
+
     async def get_by_id(self, order_id: int) -> OrderModel:
         obj = await self.session.execute(
             select(OrderModel).where(OrderModel.id == order_id).options(selectinload(OrderModel.items))

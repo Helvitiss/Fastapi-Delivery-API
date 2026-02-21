@@ -30,6 +30,9 @@ class CartRepository:
             return (await self.session.execute(stmt)).scalar_one()
 
 
+    async def clear(self, user_id: int) -> None:
+        await self.session.delete(CartModel.user_id == user_id)
+
 
 class CartItemRepository:
     def __init__(self, session: AsyncSession):

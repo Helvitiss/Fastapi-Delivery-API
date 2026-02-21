@@ -18,7 +18,7 @@ class Settings(BaseSettings):
     DB_URL: str
     ALGORITHM: str = "HS256"
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 60 * 24
-    OPT_EXPIRE_MINUTES: int = 5
+    OTP_EXPIRE_MINUTES: int = 5
 
 
 
