@@ -10,7 +10,7 @@ from app.core.exceptions import (
     UnauthorizedError, ForbiddenError, ConflictError
 )
 
-app = FastAPI(title="Delivery Service API")
+app = FastAPI(title="Доставка еды API")
 
 # Глобальный обработчик для всех исключений приложения
 @app.exception_handler(BaseAppError)

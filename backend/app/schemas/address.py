@@ -1,4 +1,4 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, Field, ConfigDict
 
 
 
@@ -8,11 +8,11 @@ from pydantic import BaseModel
 
 class AddressResponse(BaseModel):
     id: int
-    address: str
+    address: str = Field(..., example="ул. Пушкина, д. Колотушкина")
     user_id: int
 
-
+    model_config = ConfigDict(from_attributes=True)
 
 
 class AddressCreate(BaseModel):
-    address: str
+    address: str = Field(..., example="ул. Ленина, д. 10")

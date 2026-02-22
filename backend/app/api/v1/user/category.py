@@ -5,17 +5,23 @@ from fastapi import APIRouter, Depends
 from app.services.category import CategoryService
 from app.services.dish import DishService
 
-router = APIRouter(prefix="/categories", tags=["user: category"])
+router = APIRouter(prefix="/categories", tags=["Категории"])
 
 
-
-@router.get("/", response_model=list[CategoryRead])
+@router.get(
+    "/", 
+    response_model=list[CategoryRead],
+    summary="Все категории"
+)
 async def list_categories(cat_service: CategoryService = Depends(get_category_service)):
     return await cat_service.get_all_categories()
 
 
-
-@router.get('/{category_id}', response_model=CategoryRead)
+@router.get(
+    '/{category_id}', 
+    response_model=CategoryRead,
+    summary="Детали категории"
+)
 async def get_category(category_id: int, cat_service: CategoryService = Depends(get_category_service)):
     return await cat_service.get_category_by_id(category_id)
 

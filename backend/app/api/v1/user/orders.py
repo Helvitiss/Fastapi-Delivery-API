@@ -1,32 +1,47 @@
-from fastapi import APIRouter, HTTPException
-from fastapi.params import Depends
-
-from app.core.exceptions import BadRequestError
+from fastapi import APIRouter, Depends, Body
 from app.dependencies.auth import get_current_user
 from app.dependencies.main import get_order_service
 from app.models import UserModel
 from app.services.order import OrderService
+from app.schemas.order import OrderRead
 
-router = APIRouter(prefix="/orders", tags=["user: orders"])
+router = APIRouter(prefix="/orders", tags=["Заказы"])
 
 
-
-@router.get("/")
-async def get_order(user: UserModel = Depends(get_current_user),
-                    order_service: OrderService = Depends(get_order_service)):
+@router.get(
+    "/", 
+    response_model=list[OrderRead],
+    summary="Мои заказы"
+)
+async def get_my_orders(
+    order_service: OrderService = Depends(get_order_service),
+    user: UserModel = Depends(get_current_user)
+):
     return await order_service.get_all_user_orders(user_id=user.id)
 
-@router.get("/{order_id}")
-async def get_user_order(order_id: int,
-                         user: UserModel = Depends(get_current_user),
-                         order_service: OrderService = Depends(get_order_service)):
+
+@router.get(
+    "/{order_id}", 
+    response_model=OrderRead,
+    summary="Детали заказа"
+)
+async def get_order_by_id(
+    order_id: int, 
+    order_service: OrderService = Depends(get_order_service),
+    user: UserModel = Depends(get_current_user)
+):
     return await order_service.get_order_by_id_and_user(order_id, user.id)
 
 
-@router.post("/", status_code=201)
-async def create_order(address_id: int,
-                       user: UserModel = Depends(get_current_user),
-                       order_service: OrderService = Depends(get_order_service)):
+@router.post(
+    "/", 
+    status_code=201, 
+    response_model=OrderRead,
+    summary="Оформить заказ"
+)
+async def create_order(
+    address_id: int = Body(..., embed=True),
+    order_service: OrderService = Depends(get_order_service),
+    user: UserModel = Depends(get_current_user)
+):
     return await order_service.create_order(user.id, address_id)
-
-
