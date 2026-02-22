@@ -16,4 +16,3 @@ class AddressResponse(BaseModel):
 
 class AddressCreate(BaseModel):
     address: str
-    user_id: int

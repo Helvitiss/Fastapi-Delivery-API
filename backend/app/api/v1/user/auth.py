@@ -12,8 +12,8 @@ router = APIRouter(prefix="/auth", tags=["user: auth"])
 
 @router.post("/request_code", response_model=OTPSentResponse)
 async def get_token(phone_number: OTPRequest, auth_service: AuthService = Depends(get_auth_service)):
-    expires = await auth_service.request_otp(OTPRequest.phone_number)
-    return OTPSentResponse(phone_number=OTPRequest.phone_number, expires_in_seconds=expires)
+    expires = await auth_service.request_otp(phone_number.phone_number)
+    return OTPSentResponse(phone_number=phone_number.phone_number, expires_in_seconds=expires)
 
 
 

@@ -12,7 +12,7 @@ from app.models.enums import UserRole
 
 
 http_bearer = HTTPBearer()
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/user/login")
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/auth/otp_login")
 
 async def get_auth_service(db: AsyncSession = Depends(get_async_db)) -> AuthService:
     return AuthService(db)
