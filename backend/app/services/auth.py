@@ -3,7 +3,7 @@ from datetime import timedelta, datetime, UTC
 
 from sqlalchemy.ext.asyncio import AsyncSession
 from app.core.config import settings
-from app.core.exceptions import BadRequestError
+from app.core.exceptions import BadRequestError, UnauthorizedError
 from app.repositories.auth import AuthRepository
 from app.repositories.user import UserRepository
 from app.core.security import create_otp_code, create_access_token
@@ -39,7 +39,7 @@ class AuthService:
         now = datetime.now(UTC)
         otp = await self.auth_repo.get_valid_otp(phone_number, code, now)
         if otp is None:
-            raise BadRequestError("Invalid OTP or expired")
+            raise UnauthorizedError("Invalid OTP or expired")
 
         await self.auth_repo.delete_old_otps(phone_number)
         user = await self.user_repo.get_by_phone(phone_number)

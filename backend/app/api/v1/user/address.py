@@ -26,7 +26,4 @@ async def get_addresses(address_service: AddressService = Depends(get_address_se
 @router.delete('/{id}', status_code=204)
 async def delete_address(id: int, address_service: AddressService = Depends(get_address_service),
                          user: UserModel = Depends(get_current_user)):
-    try:
-        await address_service.delete(id,user.id)
-    except NotFoundError:
-        raise HTTPException(status_code=404, detail='Address not found')
+    await address_service.delete(id, user.id)

@@ -23,10 +23,7 @@ async def retrieve_dish(dish_id: int, menu_service: DishService = Depends(get_di
 
 @router.post('/', response_model=DishRead, status_code=201)
 async def create_dish(dish: DishCreate, menu_service: DishService = Depends(get_dish_service)):
-    try:
-        return await menu_service.create_dish(dish)
-    except NotFoundError:
-        raise HTTPException(status_code=404, detail="Category not found")
+    return await menu_service.create_dish(dish)
 
 @router.post('/photo')
 async def upload_dish_photo(dish_id: int, file: UploadFile = File(...),

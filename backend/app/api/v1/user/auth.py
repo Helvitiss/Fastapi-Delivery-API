@@ -20,8 +20,5 @@ async def get_token(phone_number: OTPRequest, auth_service: AuthService = Depend
 
 @router.post('/otp_login', response_model=TokenResponse)
 async def otp_login(data: OTPVerifyRequest, auth_service: AuthService = Depends(get_auth_service)):
-    try:
-        token = await auth_service.verify_otp_and_issue_token(phone_number=data.phone_number,code=data.code)
-    except BadRequestError:
-        raise HTTPException(status_code=401, detail="Invalid number or code")
+    token = await auth_service.verify_otp_and_issue_token(phone_number=data.phone_number, code=data.code)
     return TokenResponse(access_token=token)
