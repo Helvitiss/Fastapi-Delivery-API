@@ -21,14 +21,15 @@ class AuthRepository:
         return otp
 
     async def delete_old_otps(self, phone_number: str) -> None:
-        await self.session.execute(delete(OTPCodeModel).where(OTPCodeModel.phone_number == phone_number))
+        stmt = delete(OTPCodeModel).where(OTPCodeModel.phone_number == phone_number)
+        await self.session.execute(stmt)
+        await self.session.flush()
 
     async def get_valid_otp(self, phone_number: str, code: str, now: datetime) -> OTPCodeModel | None:
-        result = await self.session.execute(
-            select(OTPCodeModel).where(
-                OTPCodeModel.phone_number == phone_number,
-                OTPCodeModel.expires_at > now,
-                OTPCodeModel.code == code
-            )
+        stmt = select(OTPCodeModel).where(
+            OTPCodeModel.phone_number == phone_number,
+            OTPCodeModel.expires_at > now,
+            OTPCodeModel.code == code
         )
+        result = await self.session.execute(stmt)
         return result.scalar_one_or_none()

@@ -55,7 +55,7 @@ class OrderService:
         return await self.order_repo.get_user_orders(user_id=user_id)
 
     async def get_all_orders(self):
-        return await self.order_repo.get_all_orders()
+        return await self.order_repo.get_all()
 
     async def update_status(self, order_id: int, schema: OrderStatusSchema) -> OrderModel:
         return await self.order_repo.update_status(order_id, schema.status)

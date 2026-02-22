@@ -77,10 +77,10 @@ class CartService:
             raise NotFoundError("Item not found")
 
         if quantity == 0:
-            if cart_item:
-                await self.cart_item_repo.delete(cart_item)
+            await self.cart_item_repo.remove(cart_item)
         else:
             cart_item.quantity = quantity
+            await self.session.flush()
 
 
     async def remove_dish(self, user_id: int, dish_id: int) -> None:
@@ -88,8 +88,5 @@ class CartService:
 
 
     async def clear(self, user_id: int) -> None:
-        cart = await self.get_or_create_by_user_id(user_id)
-
-        for item in cart.items:
-            await self.cart_item_repo.delete(item)
+        await self.cart_repo.clear(user_id)
 

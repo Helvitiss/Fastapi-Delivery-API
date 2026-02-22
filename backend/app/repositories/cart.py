@@ -1,18 +1,24 @@
-from sqlalchemy import select
+from sqlalchemy import select, delete
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
 
 from app.models.cart import CartModel, CartItemModel
 
+
 class CartRepository:
     def __init__(self, session: AsyncSession):
         self.session = session
 
-    async def get_or_create_by_user_id(self, user_id: int) -> CartModel:
+    async def get_by_id(self, cart_id: int) -> CartModel | None:
+        stmt = select(CartModel).where(CartModel.id == cart_id)
+        result = await self.session.execute(stmt)
+        return result.scalar_one_or_none()
 
+    async def get_or_create_by_user_id(self, user_id: int) -> CartModel:
         stmt = select(CartModel).where(CartModel.user_id == user_id)
-        cart = (await self.session.execute(stmt)).scalar_one_or_none()
+        result = await self.session.execute(stmt)
+        cart = result.scalar_one_or_none()
 
         if cart:
             return cart
@@ -23,20 +29,25 @@ class CartRepository:
         try:
             await self.session.flush()
             return cart
-
         except IntegrityError:
-            pass
-
-            return (await self.session.execute(stmt)).scalar_one()
-
+            result = await self.session.execute(stmt)
+            return result.scalar_one()
 
     async def clear(self, user_id: int) -> None:
-        await self.session.delete(CartModel.user_id == user_id)
+        stmt = delete(CartModel).where(CartModel.user_id == user_id)
+        await self.session.execute(stmt)
+        await self.session.flush()
 
 
 class CartItemRepository:
     def __init__(self, session: AsyncSession):
         self.session = session
+
+    async def create(self, **kwargs) -> CartItemModel:
+        instance = CartItemModel(**kwargs)
+        self.session.add(instance)
+        await self.session.flush()
+        return instance
 
     async def find_by_cart_and_dish(
             self,
@@ -47,10 +58,8 @@ class CartItemRepository:
             CartItemModel.cart_id == cart_id,
             CartItemModel.dish_id == dish_id,
         )
-        obj = await self.session.execute(stmt)
-        result = obj.scalar_one_or_none()
-        return result
-
+        result = await self.session.execute(stmt)
+        return result.scalar_one_or_none()
 
     async def get_all_with_info(self, cart_id: int) -> list[CartItemModel]:
         stmt = (select(CartItemModel)
@@ -58,7 +67,6 @@ class CartItemRepository:
                 .options(selectinload(CartItemModel.dish))
                 )
         result = await self.session.scalars(stmt)
-
         return result.all()
 
     async def add_item_to_cart(
@@ -74,16 +82,12 @@ class CartItemRepository:
             await self.session.flush()
             return item
 
-        item = CartItemModel(
+        return await self.create(
             cart_id=cart_id,
             dish_id=dish_id,
             quantity=quantity,
         )
 
-        self.session.add(item)
+    async def remove(self, instance: CartItemModel) -> None:
+        await self.session.delete(instance)
         await self.session.flush()
-        return item
-
-
-    async def delete(self, cart_item: CartItemModel) -> None:
-        await self.session.delete(cart_item)

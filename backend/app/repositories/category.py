@@ -1,8 +1,8 @@
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.core.exceptions import NotFoundError
 from app.models import CategoryModel
+from app.core.exceptions import NotFoundError
 
 
 class CategoryRepository:
@@ -15,18 +15,20 @@ class CategoryRepository:
         return category
 
     async def get_all(self) -> list[CategoryModel]:
-        result = await self.session.scalars(select(CategoryModel))
+        stmt = select(CategoryModel)
+        result = await self.session.scalars(stmt)
         return result.all()
 
-    async def get_by_id(self, category_id) -> CategoryModel:
-        obj = await self.session.execute(select(CategoryModel).where(CategoryModel.id == category_id))
-        result = obj.scalar_one_or_none()
+    async def get_by_id(self, category_id: int) -> CategoryModel:
+        stmt = select(CategoryModel).where(CategoryModel.id == category_id)
+        result = await self.session.execute(stmt)
+        category = result.scalar_one_or_none()
 
-        if result is None:
+        if category is None:
             raise NotFoundError(f"Category not found: {category_id}")
-        return result
-
+        return category
 
     async def delete(self, category_id: int) -> None:
         category = await self.get_by_id(category_id)
         await self.session.delete(category)
+        await self.session.flush()
