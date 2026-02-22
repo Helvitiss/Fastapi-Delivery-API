@@ -35,7 +35,7 @@ async def clear_cart(
 @router.post(
     "/items", 
     status_code=201, 
-    response_model=CartRead,
+    response_model=CartItemRead,
     summary="Добавить блюдо"
 )
 async def add_item_to_cart(
@@ -48,7 +48,7 @@ async def add_item_to_cart(
 
 @router.patch(
     "/items", 
-    response_model=CartRead,
+    status_code=204,
     summary="Обновить количество"
 )
 async def update_cart_item(
