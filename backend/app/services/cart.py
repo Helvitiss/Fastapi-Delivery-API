@@ -8,11 +8,17 @@ from app.schemas.cart import CartRead
 
 
 class CartService:
-    def __init__(self, session: AsyncSession):
+    def __init__(
+        self, 
+        session: AsyncSession,
+        cart_repo: CartRepository,
+        cart_item_repo: CartItemRepository,
+        dish_repo: DishRepository
+    ):
         self.session = session
-        self.cart_repo = CartRepository(session)
-        self.cart_item_repo = CartItemRepository(session)
-        self.dish_repo = DishRepository(session)
+        self.cart_repo = cart_repo
+        self.cart_item_repo = cart_item_repo
+        self.dish_repo = dish_repo
 
 
 

@@ -8,11 +8,17 @@ from app.schemas.order import OrderStatusSchema
 
 
 class OrderService:
-    def __init__(self, session: AsyncSession):
+    def __init__(
+        self, 
+        session: AsyncSession,
+        order_repo: OrderRepository,
+        cart_repo: CartRepository,
+        cart_item_repo: CartItemRepository
+    ):
         self.session = session
-        self.order_repo = OrderRepository(session)
-        self.cart_repo = CartRepository(session)
-        self.cart_item_repo = CartItemRepository(session)
+        self.order_repo = order_repo
+        self.cart_repo = cart_repo
+        self.cart_item_repo = cart_item_repo
 
     async def create_order(self, user_id: int, address_id: int, comment: str | None = None) -> OrderModel:
 

@@ -11,11 +11,17 @@ from app.services.storage import LocalStorageService
 
 
 class DishService:
-    def __init__(self, session: AsyncSession):
+    def __init__(
+        self, 
+        session: AsyncSession,
+        dish_repo: DishRepository,
+        category_repo: CategoryRepository,
+        storage_service: LocalStorageService
+    ):
         self.session = session
-        self.dish_repo = DishRepository(session)
-        self.category_repo = CategoryRepository(session)
-        self.storage_service = LocalStorageService()
+        self.dish_repo = dish_repo
+        self.category_repo = category_repo
+        self.storage_service = storage_service
 
 
     async def get_dish_by_id(self, dish_id: int, include_inactive=False) -> DishModel:

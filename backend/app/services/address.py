@@ -7,9 +7,9 @@ from app.schemas.address import AddressCreate
 
 
 class AddressService:
-    def __init__(self, session: AsyncSession):
+    def __init__(self, session: AsyncSession, address_repo: AddressRepository):
         self.session = session
-        self.address_repo = AddressRepository(session)
+        self.address_repo = address_repo
 
 
     async def create(self, user_id: int, address: AddressCreate):

@@ -12,10 +12,15 @@ logger = logging.getLogger(__name__)
 
 
 class AuthService:
-    def __init__(self, session: AsyncSession):
+    def __init__(
+        self, 
+        session: AsyncSession,
+        user_repo: UserRepository,
+        auth_repo: AuthRepository
+    ):
         self.session = session
-        self.user_repo = UserRepository(session)
-        self.auth_repo = AuthRepository(session)
+        self.user_repo = user_repo
+        self.auth_repo = auth_repo
 
     async def request_otp(self, phone_number: str) -> int:
         code = create_otp_code()

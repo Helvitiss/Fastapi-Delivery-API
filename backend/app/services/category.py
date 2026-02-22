@@ -6,9 +6,9 @@ from app.schemas.category import CategoryCreate, CategoryUpdate
 
 
 class CategoryService:
-    def __init__(self, session: AsyncSession):
+    def __init__(self, session: AsyncSession, category_repo: CategoryRepository):
         self.session = session
-        self.category_repo = CategoryRepository(session)
+        self.category_repo = category_repo
 
     async def create_category(self, category_schema: CategoryCreate) -> CategoryModel:
         category_model = CategoryModel(**category_schema.model_dump())
