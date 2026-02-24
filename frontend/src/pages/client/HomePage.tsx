@@ -186,7 +186,7 @@ export function HomePage() {
             <h3 className="mb-3 text-3xl font-bold">Ваш баланс</h3>
             <div className="rounded-2xl bg-[#F7B500] p-5 text-white shadow-soft">
               <p className="text-sm opacity-90">Доступно к оплате</p>
-              <p className="text-4xl font-black">{formatPrice(totalPrice || 12000)}</p>
+              <p className="text-4xl font-black">{formatPrice(totalPrice)}</p>
             </div>
           </section>
 
@@ -201,7 +201,8 @@ export function HomePage() {
           <section>
             <h3 className="mb-4 text-3xl font-bold">Корзина</h3>
             <div className="space-y-4">
-              {(cartItems.length ? cartItems : topDishes.slice(0, 3).map((dish) => ({ dish, quantity: 1, total_dish_price: dish.price }))).map((item) => (
+              {cartItems.length === 0 ? <p className="text-sm text-gray-500">Корзина пуста</p> : null}
+              {cartItems.map((item) => (
                 <div key={item.dish.id} className="flex items-center justify-between">
                   <div className="flex items-center gap-3">
                     <div className="h-12 w-12 overflow-hidden rounded-full bg-[#F1F1F1]">
