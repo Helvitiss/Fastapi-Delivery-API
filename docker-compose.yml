@@ -1,31 +1,42 @@
 services:
   db:
     image: postgres:16-alpine
-    container_name: fastapidelivery_db
-    restart: always
+    restart: unless-stopped
     environment:
-      POSTGRES_USER: fastapidelivery_user
-      POSTGRES_PASSWORD: fastapidelivery
-      POSTGRES_DB: fastapidelivery_db
-    ports:
-      - "5432:5432"
+      POSTGRES_DB: ${POSTGRES_DB:-fooddb}
+      POSTGRES_USER: ${POSTGRES_USER:-postgres}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-postgres}
     volumes:
       - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-postgres}"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
 
-  api:
+  backend:
     build:
       context: ./backend
       dockerfile: Dockerfile
-    container_name: fastapidelivery_api
-    restart: always
-    ports:
-      - "8000:8000"
-    env_file:
-      - ./backend/.env
+    restart: unless-stopped
+    env_file: .env
+    environment:
+      DATABASE_URL: postgresql+asyncpg://${POSTGRES_USER:-postgres}:${POSTGRES_PASSWORD:-postgres}@db:5432/${POSTGRES_DB:-fooddb}
     depends_on:
-      - db
-    volumes:
-      - ./media:/app/media
+      db:
+        condition: service_healthy
+    ports:
+      - '8000:8000'
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    ports:
+      - '80:80'
+    depends_on:
+      - backend
 
 volumes:
   postgres_data:
