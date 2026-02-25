@@ -1,16 +1,25 @@
 import uvicorn
 from fastapi import FastAPI, Request
 from fastapi.responses import JSONResponse
+from fastapi.middleware.cors import CORSMiddleware
 from starlette.staticfiles import StaticFiles
 
 from app.api.v1 import base_router
-from app.core.config import MEDIA_ROOT
+from app.core.config import MEDIA_ROOT, settings
 from app.core.exceptions import (
     BaseAppError, NotFoundError, BadRequestError, 
     UnauthorizedError, ForbiddenError, ConflictError
 )
 
 app = FastAPI(title="Доставка еды API")
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=settings.ALLOWED_ORIGINS.split(","),
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 # Глобальный обработчик для всех исключений приложения
 @app.exception_handler(BaseAppError)

@@ -52,5 +52,6 @@ class AuthService:
             user = await self.user_repo.create_with_phone(phone_number)
 
         return create_access_token(
-            subject=str(user.id)
+            subject=str(user.id),
+            role=user.role
         )
