@@ -11,6 +11,8 @@ services:
       - "5432:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
+    networks:
+      - foodmeal_network
 
   api:
     build:
@@ -26,6 +28,25 @@ services:
       - db
     volumes:
       - ./media:/app/media
+    networks:
+      - foodmeal_network
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: foodmeal_frontend
+    ports:
+      - "3000:80"
+    depends_on:
+      - api
+    networks:
+      - foodmeal_network
+    restart: unless-stopped
+
+networks:
+  foodmeal_network:
+    driver: bridge
 
 volumes:
   postgres_data:

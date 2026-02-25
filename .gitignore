@@ -159,3 +159,8 @@ cython_debug/
 .idea/
 /media/
 media/
+frontend/.env
+
+frontend/node_modules/
+frontend/dist/
+frontend/tsconfig.tsbuildinfo
