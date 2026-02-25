@@ -34,7 +34,7 @@ export const adminService = {
 
     // Categories
     getCategories: async (): Promise<CategoryRead[]> => {
-        const response = await api.get<CategoryRead[]>('/admin/categories/');
+        const response = await api.get<CategoryRead[]>('/categories/');
         return response.data;
     },
     createCategory: async (data: CategoryCreate): Promise<CategoryRead> => {

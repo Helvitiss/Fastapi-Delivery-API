@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
-import { adminService } from '../../api/admin';
 import { queryKeys } from '../../api/queryKeys';
 import { Spinner } from '../../components/ui/Spinner';
 import { format } from 'date-fns';
@@ -84,7 +83,9 @@ export const AdminUsersPage: React.FC = () => {
                                     )}
                                 </td>
                                 <td className="p-4 text-sm text-gray-500">
-                                    {format(new Date(user.created_at), 'd MMMM yyyy', { locale: ru })}
+                                    {user.created_at
+                                        ? format(new Date(user.created_at), 'd MMMM yyyy', { locale: ru })
+                                        : '—'}
                                 </td>
                             </tr>
                         ))}

@@ -5,6 +5,7 @@ from app.repositories.dish import DishRepository
 from app.repositories.category import CategoryRepository
 from app.services.storage import LocalStorageService
 from app.schemas.dish import DishCreate, DishUpdate
+from app.core.exceptions import ConflictError
 from app.models import DishModel
 
 @pytest.fixture
@@ -33,6 +34,7 @@ async def test_create_dish(dish_service, dish_repo, category_repo):
     
     # Мокаем проверку категории
     category_repo.get_by_id.return_value = MagicMock()
+    dish_repo.get_by_name.return_value = None
     dish_repo.create.return_value = DishModel(id=1, name="Pizza")
     
     result = await dish_service.create_dish(schema)
@@ -62,3 +64,21 @@ async def test_get_list_dishes(dish_service, dish_repo):
     result = await dish_service.get_list_dishes()
     assert len(result) == 1
     dish_repo.get_all.assert_called_once()
+
+
+async def test_create_dish_duplicate_name(dish_service, dish_repo, category_repo):
+    schema = DishCreate(name="Pizza", price=500, category_id=1)
+
+    category_repo.get_by_id.return_value = MagicMock()
+    dish_repo.get_by_name.return_value = DishModel(id=2, name="Pizza")
+
+    with pytest.raises(ConflictError, match="Dish with this name already exists"):
+        await dish_service.create_dish(schema)
+
+
+async def test_update_dish_duplicate_name(dish_service, dish_repo):
+    dish_repo.get_by_id.return_value = DishModel(id=1, name="Old")
+    dish_repo.get_by_name.return_value = DishModel(id=2, name="Pizza")
+
+    with pytest.raises(ConflictError, match="Dish with this name already exists"):
+        await dish_service.update_dish(1, DishUpdate(name="Pizza"))

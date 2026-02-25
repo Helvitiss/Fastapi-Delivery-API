@@ -1,4 +1,4 @@
-from sqlalchemy import select
+from sqlalchemy import select, func
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.models import DishModel
@@ -13,6 +13,12 @@ class DishRepository:
         self.session.add(dish)
         await self.session.flush()
         return dish
+
+
+    async def get_by_name(self, name: str) -> DishModel | None:
+        stmt = select(DishModel).where(func.lower(DishModel.name) == name.lower())
+        result = await self.session.execute(stmt)
+        return result.scalar_one_or_none()
 
     async def get_by_id(self, dish_id: int, include_inactive: bool = False) -> DishModel:
         stmt = select(DishModel).where(DishModel.id == dish_id)

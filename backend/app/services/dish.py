@@ -3,6 +3,7 @@ from logging import getLogger
 from fastapi import UploadFile
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from app.core.exceptions import ConflictError
 from app.models import DishModel
 from app.repositories.category import CategoryRepository
 from app.repositories.dish import DishRepository
@@ -31,7 +32,13 @@ class DishService:
     async def create_dish(self, dish_schema: DishCreate) -> DishModel:
         await self.category_repo.get_by_id(dish_schema.category_id)
 
+        normalized_name = dish_schema.name.strip()
+        duplicate = await self.dish_repo.get_by_name(normalized_name)
+        if duplicate is not None:
+            raise ConflictError('Dish with this name already exists')
+
         dish_model = DishModel(**dish_schema.model_dump())
+        dish_model.name = normalized_name
         result = await self.dish_repo.create(dish_model)
 
         return result
@@ -52,7 +59,17 @@ class DishService:
         if dish_schema.category_id is not None:
             await self.category_repo.get_by_id(dish_schema.category_id)
 
-        for key, value in dish_schema.model_dump(exclude_unset=True).items():
+        if dish_schema.name is not None:
+            normalized_name = dish_schema.name.strip()
+            duplicate = await self.dish_repo.get_by_name(normalized_name)
+            if duplicate is not None and duplicate.id != dish.id:
+                raise ConflictError('Dish with this name already exists')
+
+        update_data = dish_schema.model_dump(exclude_unset=True)
+        if 'name' in update_data and update_data['name'] is not None:
+            update_data['name'] = update_data['name'].strip()
+
+        for key, value in update_data.items():
             setattr(dish, key, value)
 
         return dish

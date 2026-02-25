@@ -34,7 +34,9 @@ class CartRepository:
             return result.scalar_one()
 
     async def clear(self, user_id: int) -> None:
-        stmt = delete(CartModel).where(CartModel.user_id == user_id)
+        cart = await self.get_or_create_by_user_id(user_id)
+
+        stmt = delete(CartItemModel).where(CartItemModel.cart_id == cart.id)
         await self.session.execute(stmt)
         await self.session.flush()
 

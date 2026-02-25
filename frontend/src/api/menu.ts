@@ -11,7 +11,7 @@ export const menuService = {
         return response.data;
     },
     getCategories: async (): Promise<CategoryRead[]> => {
-        const response = await api.get<CategoryRead[]>('/category/');
+        const response = await api.get<CategoryRead[]>('/categories/');
         return response.data;
     },
 };

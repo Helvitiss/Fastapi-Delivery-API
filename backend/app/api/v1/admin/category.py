@@ -34,4 +34,3 @@ async def update_category(category_id: int, data: CategoryUpdate, cat_service: C
 )
 async def delete_category(category_id: int, cat_service: CategoryService = Depends(get_category_service)):
     await cat_service.delete_category(category_id)
-

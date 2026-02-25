@@ -9,6 +9,11 @@ class UserRepository:
     def __init__(self, session: AsyncSession):
         self.session = session
 
+    async def get_all(self) -> list[UserModel]:
+        stmt = select(UserModel)
+        result = await self.session.scalars(stmt)
+        return result.all()
+
     async def get_by_id(self, user_id: int) -> UserModel:
         stmt = select(UserModel).where(UserModel.id == user_id)
         result = await self.session.execute(stmt)

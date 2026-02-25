@@ -16,3 +16,9 @@ class UserRead(BaseModel):
 
 class UserUpdate(UserCreate):
     name: str
+
+class AdminUserRead(BaseModel):
+    id: int
+    phone_number: str
+    role: str
+    created_at: str | None = None
