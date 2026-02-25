@@ -2,7 +2,7 @@ import pytest
 from unittest.mock import AsyncMock, MagicMock
 from datetime import datetime
 from app.dependencies.auth import get_current_user, is_admin
-from app.dependencies.main import get_category_service, get_dish_service, get_order_service
+from app.dependencies.main import get_category_service, get_dish_service, get_order_service, get_user_repository
 from app.main import app
 from app.models import UserModel, CategoryModel, OrderModel
 from app.models.enums import UserRole, OrderStatus
@@ -22,6 +22,34 @@ def mock_dish_service():
 @pytest.fixture
 def mock_order_service():
     return AsyncMock()
+
+@pytest.fixture
+def mock_user_repository():
+    return AsyncMock()
+
+@pytest.mark.asyncio
+async def test_admin_list_users(client, admin_user, mock_user_repository):
+    app.dependency_overrides[get_current_user] = lambda: admin_user
+    app.dependency_overrides[is_admin] = lambda: admin_user
+    app.dependency_overrides[get_user_repository] = lambda: mock_user_repository
+
+    user = MagicMock()
+    user.id = 1
+    user.phone = "79998887766"
+    user.role = "admin"
+    mock_user_repository.get_all.return_value = [user]
+
+    response = await client.get("/admin/users/")
+
+    app.dependency_overrides.clear()
+    assert response.status_code == 200
+    assert response.json() == [{
+        "id": 1,
+        "phone_number": "79998887766",
+        "role": "admin",
+        "created_at": None,
+    }]
+
 
 @pytest.mark.asyncio
 async def test_admin_create_category(client, admin_user, mock_category_service):

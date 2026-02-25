@@ -82,7 +82,7 @@ export interface UserRead {
     id: number;
     phone_number: string;
     role: string;
-    created_at: string;
+    created_at?: string | null;
 }
 
 export interface TokenResponse {
