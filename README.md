@@ -1,123 +1,206 @@
-# FastAPI Delivery Service API 🍕
+# Food Delivery API
 
-[![Python](https://img.shields.io/badge/python-3.12-blue.svg)](https://www.python.org/downloads/release/python-3120/)
-[![FastAPI](https://img.shields.io/badge/FastAPI-0.128.0-05998b.svg)](https://fastapi.tiangolo.com/)
-[![Tests](https://img.shields.io/badge/tests-27%20passed-brightgreen.svg)]()
-[![Coverage](https://img.shields.io/badge/coverage-100%25-brightgreen.svg)]()
-[![License](https://img.shields.io/badge/license-MIT-blue.svg)]()
+> Монорепо для сервиса доставки еды. На данный момент реализован бэкенд — с чистой архитектурой, асинхронным стеком и полным покрытием тестами. Фронтенд в разработке.
 
-Современный, быстрый и надежный бэкенд для сервиса доставки еды. Проект разработан с упором на чистоту кода, типобезопасность и автоматическое тестирование.
+[![Python](https://img.shields.io/badge/Python-3.12-3776AB?logo=python&logoColor=white)](https://www.python.org/)
+[![FastAPI](https://img.shields.io/badge/FastAPI-0.128-009688?logo=fastapi&logoColor=white)](https://fastapi.tiangolo.com/)
+[![PostgreSQL](https://img.shields.io/badge/PostgreSQL-16-4169E1?logo=postgresql&logoColor=white)](https://www.postgresql.org/)
+[![Docker](https://img.shields.io/badge/Docker-Compose-2496ED?logo=docker&logoColor=white)](https://www.docker.com/)
+[![Tests](https://img.shields.io/badge/Tests-27%20passed-brightgreen)](https://pytest.org/)
+[![Coverage](https://img.shields.io/badge/Coverage-100%25-brightgreen)](https://pytest-cov.readthedocs.io/)
+[![License](https://img.shields.io/badge/License-MIT-blue)](LICENSE)
 
 ---
 
-##  Архитектура
+## О проекте
 
-Проект следует принципам **Layered Architecture** (Многослойная архитектура), что обеспечивает слабую связанность компонентов и легкость тестирования.
+Полноценный REST API для сервиса доставки еды. Проект написан с упором на **правильную структуру кода**: каждый слой отвечает ровно за одну задачу, зависимости инжектируются явно, бизнес-логика полностью изолирована от инфраструктуры и покрыта тестами.
 
-```mermaid
-graph TD
-    Client[API Client / Swagger] --> Routers[API Routers /User & /Admin/]
-    Routers --> Services[Business Logic Services]
-    Services --> Repositories[Data Access Repositories]
-    Repositories --> DB[(PostgreSQL)]
-    
-    subgraph Layers
-        Routers
-        Services
-        Repositories
-    end
+Это не учебный CRUD — здесь реализованы OTP-авторизация без пароля, умная корзина с агрегацией, заказы со снимком цены на момент оформления и ролевая модель с разделением на пользовательский и административный контуры.
+
+---
+
+## Архитектура
+
+Проект построен по принципу **Layered Architecture** — каждый слой зависит только от нижележащего, а не от соседнего или верхнего.
+
+```
+┌─────────────────────────────────────┐
+│         API Layer (Routers)         │  HTTP-эндпоинты, валидация входных данных
+├─────────────────────────────────────┤
+│       Service Layer (Services)      │  Бизнес-логика, оркестрация
+├─────────────────────────────────────┤
+│   Repository Layer (Repositories)   │  Доступ к данным, SQL-запросы
+├─────────────────────────────────────┤
+│        Data Layer (Models)          │  SQLAlchemy ORM модели
+└─────────────────────────────────────┘
 ```
 
-##  Технологический стек
+Такой подход даёт три конкретных преимущества:
 
-*   **Core:** FastAPI (Async), Pydantic v2.
-*   **Database:** PostgreSQL + SQLAlchemy 2.0 (Async Engine).
-*   **Auth:** JWT + OTP (аутентификация по номеру телефона).
-*   **Infrastructure:** Docker, Docker Compose, Alembic (миграции).
-*   **CI/QA:** Pytest (Unit & Integration), Pytest-cov.
+- **Тестируемость** — сервисы тестируются без базы данных, через моки репозиториев
+- **Заменяемость** — репозиторий PostgreSQL можно заменить на любой другой без изменения бизнес-логики
+- **Читаемость** — каждый файл делает ровно одно дело, его объём предсказуем
 
-##  Ключевые возможности
+### Структура проекта
 
-*   **Auth Flow:** Безопасный вход без пароля (OTP через имитацию SMS).
-*   **Cart System:** Умная корзина с расчетом стоимости и проверкой доступности блюд.
-*   **Admin Power:** Полное управление меню, категориями и заказами через `/admin` эндпоинты.
-*   **Robustness:** Обработка ошибок на глобальном уровне с понятными ответами.
-*   **Reliability:** 100% покрытие бизнес-логики тестами.
-
----
-
-##  Конфигурация (.env)
-
-| Переменная | Описание | Значение по умолчанию |
-| :--- | :--- | :--- |
-| `DB_URL` | URL подключения к БД | `postgresql+asyncpg://...` |
-| `SECRET_KEY` | Ключ для подписи JWT | *сгенерируйте свой* |
-| `ALGORITHM` | Алгоритм шифрования JWT | `HS256` |
-| `ACCESS_TOKEN_EXPIRE_MINUTES` | Время жизни токена | `1440` (24 часа) |
-| `OTP_EXPIRE_MINUTES` | Время жизни OTP кода | `5` |
-
----
-
-##  Быстрый старт
-
-### Через Docker (Рекомендуется)
-1. Скопируйте шаблон настроек: `cp .env.example .env`
-2. Запустите проект:
-```bash
-docker compose up -d --build
 ```
-*Swagger UI будет доступен по адресу: [http://localhost:8000/docs](http://localhost:8000/docs)*
-
-### Локально
-1. Создайте venv и установите зависимости: `pip install -r requirements.txt`
-2. Примените миграции: `alembic upgrade head`
-3. Запустите сервер: `uvicorn app.main:app --reload`
-
-
-### Создание администратора через CLI
-
-Когда контейнер с API уже запущен, можно создать администратора (или повысить существующего пользователя до администратора) по номеру телефона:
-
-```bash
-docker exec -it fastapidelivery_api python -m app.cli.create_admin +79990001122 --name "Super Admin"
+backend/
+├── app/
+│   ├── api/v1/
+│   │   ├── admin/         # Эндпоинты для администраторов
+│   │   └── user/          # Публичные эндпоинты
+│   ├── core/              # Настройки, БД, исключения, безопасность
+│   ├── dependencies/      # DI-контейнер (FastAPI Depends)
+│   ├── models/            # SQLAlchemy-модели
+│   ├── repositories/      # Слой доступа к данным
+│   ├── schemas/           # Pydantic-схемы (DTO)
+│   ├── services/          # Бизнес-логика
+│   └── cli/               # CLI-команды (создание администратора)
+└── tests/
+    ├── unit/              # Тесты сервисов (с моками)
+    └── integration/       # Тесты API (через AsyncClient)
 ```
 
-Что делает команда:
-- если пользователь с таким телефоном есть — меняет роль на `admin`;
-- если пользователя нет — создаёт нового сразу с ролью `admin`.
+---
 
+## Технологический стек
+
+| Категория | Технология |
+|---|---|
+| **Framework** | FastAPI (async) |
+| **База данных** | PostgreSQL 16 + SQLAlchemy 2.0 (async engine) |
+| **Валидация** | Pydantic v2 |
+| **Миграции** | Alembic |
+| **Авторизация** | JWT + OTP (вход по номеру телефона) |
+| **Инфраструктура** | Docker, Docker Compose |
+| **Тесты** | Pytest, pytest-asyncio, pytest-cov |
 
 ---
 
-##  Тестирование и Качество
+## Ключевые возможности
 
-Мы серьезно относимся к стабильности. В проекте настроены юнит-тесты для всей бизнес-логики и интеграционные тесты для всех API вызовов.
+### OTP-авторизация
+Вход без пароля — пользователь получает одноразовый код на телефон. Коды хранятся с TTL, при повторном запросе старые удаляются. Токены подписываются через JWT (HS256).
 
-**Запуск тестов с генерацией отчета о покрытии:**
+### Корзина
+Корзина создаётся автоматически при первом обращении. При добавлении одного блюда дважды — количество суммируется, а не создаётся дубликат. Итоговая стоимость считается на сервере, а не доверяется клиенту.
+
+### Заказы
+При оформлении заказа цена и название блюда **фиксируются** в `order_items` — даже если блюдо потом изменится или исчезнет из меню, история заказа останется корректной. После оформления корзина очищается автоматически.
+
+### Ролевая модель
+Все `/admin` маршруты защищены зависимостью `is_admin` на уровне роутера. Обычный пользователь получит `403` ещё до вызова сервисного слоя.
+
+### Загрузка изображений
+Загрузка фото блюда с автоматической заменой: при обновлении старый файл удаляется с диска. Файлы раздаются через `StaticFiles` по пути `/media`.
+
+---
+
+## Тестирование
+
+Покрытие бизнес-логики — **100%**. Архитектура изначально проектировалась с расчётом на тестируемость.
+
+```
+tests/
+├── unit/              # 15 тестов: сервисы тестируются изолированно через AsyncMock
+└── integration/       # 12 тестов: API тестируются через httpx.AsyncClient
+```
+
+Запуск с отчётом о покрытии:
+
 ```bash
 pytest -v tests/ --cov=app --cov-report=term-missing
 ```
 
-**Статистика:**
-- **Unit-тесты:** 15 (Сервисы)
-- **Integration-тесты:** 12 (API)
-- **Итого:** 27 тестов, **100% покрытие**.
+В юнит-тестах репозитории подменяются моками — тесты работают без БД и запускаются мгновенно. В интеграционных тестах зависимости переопределяются через `dependency_overrides` FastAPI — приложение тестируется как чёрный ящик через HTTP.
 
 ---
 
-##  Структура проекта
+## Быстрый старт
 
-```text
-app/
-├── api/          # Слой представления (FastAPI Routers)
-├── core/         # Глобальные настройки, БД, исключения
-├── dependencies/ # Внедрение зависимостей (DI)
-├── models/       # SQLAlchemy модели (Data Layer)
-├── repositories/ # Слой доступа к данным (CRUD)
-├── schemas/      # Pydantic схемы (DTO)
-└── services/     # Бизнес-логика (Business Layer)
-tests/            # Тестовая база проекта
+### Через Docker (рекомендуется)
+
+```bash
+# 1. Скопировать конфигурацию
+cp backend/.env.example backend/.env
+
+# 2. Запустить
+docker compose up -d --build
 ```
 
-##  Лицензия
-Этот проект распространяется под лицензией MIT.
+Swagger UI: [http://localhost:8000/docs](http://localhost:8000/docs)
+
+> Миграции применяются автоматически при старте контейнера.
+
+### Локально
+
+```bash
+pip install -r backend/requirements.txt
+alembic upgrade head
+uvicorn app.main:app --reload
+```
+
+### Создание администратора
+
+```bash
+docker exec -it fastapidelivery_api \
+  python -m app.cli.create_admin +79990001122 --name "Admin"
+```
+
+Команда создаёт пользователя с ролью `admin` или повышает существующего — в зависимости от того, есть ли уже аккаунт с этим номером.
+
+---
+
+## Конфигурация
+
+Все настройки задаются через `.env` файл:
+
+| Переменная | Описание | По умолчанию |
+|---|---|---|
+| `SECRET_KEY` | Ключ подписи JWT | — |
+| `DB_URL` | URL подключения к PostgreSQL | `postgresql+asyncpg://...` |
+| `ALGORITHM` | Алгоритм JWT | `HS256` |
+| `ACCESS_TOKEN_EXPIRE_MINUTES` | Время жизни токена | `1440` (24ч) |
+| `OTP_EXPIRE_MINUTES` | Время жизни OTP-кода | `5` |
+
+---
+
+## API: основные маршруты
+
+| Метод | Маршрут | Описание |
+|---|---|---|
+| `POST` | `/auth/request-code` | Запросить OTP-код |
+| `POST` | `/auth/login` | Войти по OTP, получить JWT |
+| `GET` | `/dishes/` | Список доступных блюд |
+| `GET` | `/categories/` | Список категорий |
+| `GET` | `/cart/` | Содержимое корзины |
+| `POST` | `/cart/items` | Добавить блюдо в корзину |
+| `POST` | `/orders/` | Оформить заказ |
+| `GET` | `/orders/` | Мои заказы |
+| `GET` | `/admin/orders/` | Все заказы (admin) |
+| `PATCH` | `/admin/orders/{id}/status` | Изменить статус заказа (admin) |
+
+Полная документация со всеми схемами доступна в Swagger: `/docs`
+
+---
+
+## Дорожная карта
+
+Проект задуман как монорепо с раздельными `backend/` и `frontend/` директориями. Бэкенд реализован полностью — сейчас ведётся разработка фронтенда.
+
+- [x] REST API (FastAPI)
+- [x] Авторизация по OTP
+- [x] Корзина, заказы, меню, адреса
+- [x] Административный контур
+- [x] Docker Compose окружение
+- [x] 100% покрытие тестами
+- [ ] Фронтенд (в разработке)
+- [ ] WebSocket-уведомления о статусе заказа
+- [ ] Интеграция с реальным SMS-провайдером
+
+---
+
+## Лицензия
+
+[MIT](LICENSE)
