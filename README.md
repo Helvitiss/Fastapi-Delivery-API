@@ -1,81 +1,81 @@
 # FastAPI Delivery API
 
-Production-oriented backend for a food delivery service.
+Production-oriented backend для сервиса доставки еды.
 
 ## TL;DR
 
-Production-ready backend for a food delivery service built with FastAPI and Async SQLAlchemy.
-Implements OTP authentication, JWT-based authorization, cart logic, order management, and role-based access (user/admin).
-Designed with layered architecture, covered by unit and integration tests, and ready for Docker-based deployment.
+Production-ready backend для доставки еды на FastAPI и Async SQLAlchemy.
+Реализованы OTP-аутентификация, JWT-авторизация, логика корзины, управление заказами и разделение прав доступа (user/admin).
+Проект построен на layered-архитектуре, покрыт unit и integration тестами и готов к запуску в Docker.
 
-## Project Overview
+## О проекте
 
-This repository was originally designed as part of a monorepo (backend + frontend).
-At this stage, the backend API is the core deliverable and already implements the main food-delivery domain flows:
+Этот репозиторий изначально проектировался как часть монорепозитория (backend + frontend).
+Сейчас основной фокус — backend API, который уже закрывает ключевые доменные сценарии сервиса доставки еды:
 
-- authentication and authorization;
-- menu/catalog access;
-- cart operations;
-- address management;
-- order placement and tracking;
-- admin operations for menu and order management.
+- аутентификация и авторизация;
+- работа с каталогом и меню;
+- операции с корзиной;
+- управление адресами доставки;
+- создание и просмотр заказов;
+- административные сценарии управления меню и заказами.
 
-Frontend development is planned as the next stage, and the repository structure already supports that roadmap.
+Frontend запланирован как следующий этап развития, а текущая структура репозитория уже готова к этому.
 
-## Key Technical Highlights
+## Ключевые технические преимущества
 
-- Async FastAPI + SQLAlchemy 2.0 stack with clear separation of concerns.
-- Layered architecture: routers → services → repositories → models.
-- Transactional business flows around cart and order operations.
-- Role-based access control with explicit user/admin separation.
-- OTP flow with expiration handling and JWT token lifecycle.
-- CLI utility for operational tasks (admin bootstrap/promote).
-- Structured test suite (unit + integration) for business and API behavior.
+- Асинхронный стек FastAPI + SQLAlchemy 2.0 с явным разделением ответственности.
+- Layered-архитектура: routers → services → repositories → models.
+- Транзакционные бизнес-потоки вокруг корзины и оформления заказа.
+- Role-based access control с четким разделением user/admin.
+- OTP-flow с контролем срока действия кода и JWT lifecycle.
+- CLI-утилита для операционных задач (создание/повышение администратора).
+- Структурированный набор тестов (unit + integration) для бизнес-логики и API-контрактов.
 
-## API Capabilities
+## Возможности API
 
-### User Domain
-- `auth`: OTP authentication and JWT token issuance.
-- `categories` / `dishes`: menu browsing.
-- `cart`: add/update/remove items and calculate totals.
-- `addresses`: manage delivery addresses.
-- `orders`: create and view user orders.
+### Пользовательская зона
+- `auth`: OTP-аутентификация и выдача JWT-токенов.
+- `categories` / `dishes`: просмотр категорий и блюд.
+- `cart`: добавление/обновление/удаление позиций и расчет итоговой стоимости.
+- `addresses`: управление адресами доставки.
+- `orders`: создание и просмотр заказов.
 
-### Admin Domain
-- category management;
-- dish management;
-- order management;
-- admin role provisioning via CLI.
+### Административная зона
+- управление категориями;
+- управление блюдами;
+- управление заказами;
+- выдача роли администратора через CLI.
 
-## Architecture
+## Архитектура
 
-The project follows a layered architecture:
+Проект следует layered-подходу:
 
-- **API (routers)**: HTTP contracts and request/response validation.
-- **Services**: business logic and use-case orchestration.
-- **Repositories**: data access abstractions.
-- **Models/Schemas**: DB models and DTOs.
-- **Core**: settings, exception handling, infrastructure glue.
+- **API (routers)**: HTTP-контракты и валидация request/response.
+- **Services**: бизнес-логика и orchestration use-case сценариев.
+- **Repositories**: слой доступа к данным.
+- **Models/Schemas**: модели БД и DTO.
+- **Core**: конфигурация, обработка исключений и инфраструктурная обвязка.
 
-This design improves maintainability, testability, and long-term extensibility.
+Такой подход упрощает поддержку, тестирование и развитие функциональности.
 
-## Security Considerations
+## Безопасность
 
-- JWT-based authentication for stateless API access.
-- Short-lived OTP codes with expiration control.
-- Role-based access control for privileged operations.
-- Environment-based configuration for sensitive settings.
-- Separation of admin and public API endpoints.
+- JWT-базированная аутентификация для stateless API-доступа.
+- Короткоживущие OTP-коды с контролем времени жизни.
+- Role-based access control для привилегированных операций.
+- Конфигурация через переменные окружения для чувствительных параметров.
+- Разделение публичных и административных эндпоинтов.
 
-## Scalability Considerations
+## Масштабируемость
 
-- Async I/O at the framework and DB access levels.
-- Stateless JWT model suitable for horizontal scaling.
-- Layered codebase that supports safe feature growth.
-- Docker-first runtime for reproducible deployment environments.
-- Clear domain boundaries to simplify future service decomposition.
+- Async I/O на уровне фреймворка и доступа к БД.
+- Stateless JWT-модель, удобная для горизонтального масштабирования.
+- Слоистая архитектура, безопасная для эволюции продукта.
+- Docker-first подход для воспроизводимого окружения деплоя.
+- Четкие доменные границы для дальнейшей декомпозиции.
 
-## Technology Stack
+## Технологический стек
 
 - Python 3.12
 - FastAPI
@@ -86,7 +86,7 @@ This design improves maintainability, testability, and long-term extensibility.
 - Pytest / pytest-asyncio / pytest-cov
 - Docker / Docker Compose
 
-## Repository Structure
+## Структура репозитория
 
 ```text
 .
@@ -111,24 +111,24 @@ This design improves maintainability, testability, and long-term extensibility.
 └── README.md
 ```
 
-## Quick Start
+## Быстрый старт
 
-### Option 1: Docker (recommended)
+### Вариант 1: Docker (рекомендуется)
 
-1. Create `backend/.env`.
-2. Fill required environment variables (see example below).
-3. Run:
+1. Создайте файл `backend/.env`.
+2. Заполните обязательные переменные окружения (пример ниже).
+3. Запустите контейнеры:
 
 ```bash
 docker compose up -d --build
 ```
 
-API docs after startup:
+Документация API после запуска:
 
 - Swagger UI: `http://localhost:8000/docs`
 - ReDoc: `http://localhost:8000/redoc`
 
-### Option 2: Local backend run
+### Вариант 2: Локальный запуск backend
 
 ```bash
 cd backend
@@ -139,7 +139,7 @@ alembic upgrade head
 uvicorn app.main:app --reload --host 0.0.0.0 --port 8000
 ```
 
-## Environment Variables (`backend/.env`)
+## Переменные окружения (`backend/.env`)
 
 ```env
 SECRET_KEY=your_secret_key
@@ -149,38 +149,38 @@ ACCESS_TOKEN_EXPIRE_MINUTES=1440
 OTP_EXPIRE_MINUTES=5
 ```
 
-For local non-Docker runs, replace `db` in `DB_URL` with `localhost` (or your actual DB host).
+Для локального запуска без Docker замените `db` в `DB_URL` на `localhost` (или ваш реальный хост БД).
 
-## CLI: Create/Promote Admin
+## CLI: создание/повышение администратора
 
-After API container startup:
+После запуска API-контейнера:
 
 ```bash
 docker exec -it fastapidelivery_api python -m app.cli.create_admin +79990001122 --name "Super Admin"
 ```
 
-## Testing Strategy
+## Стратегия тестирования
 
-The project uses both unit and integration layers:
+В проекте используются два уровня тестов:
 
-- **Unit tests (`backend/tests/unit`)**:
-  - test service-layer business logic in isolation;
-  - use `AsyncMock`/mock repositories and mocked async DB session;
-  - validate domain behavior such as cart totals and order flow decisions.
-- **Integration tests (`backend/tests/integration`)**:
-  - run API-level checks through FastAPI app with `httpx.AsyncClient` + `ASGITransport`;
-  - override dependencies for authenticated users/services where required;
-  - verify endpoint contracts, statuses, and response payloads.
-- **Shared fixtures (`backend/tests/conftest.py`)**:
-  - reusable async client and event loop setup.
+- **Unit-тесты (`backend/tests/unit`)**:
+  - проверяют бизнес-логику сервисного слоя в изоляции;
+  - используют `AsyncMock`/mock-репозитории и мок сессии БД;
+  - валидируют доменные сценарии, например расчеты корзины и решения в order-flow.
+- **Integration-тесты (`backend/tests/integration`)**:
+  - проверяют API-уровень через FastAPI app с `httpx.AsyncClient` + `ASGITransport`;
+  - используют dependency overrides для текущего пользователя и сервисов;
+  - валидируют контракты эндпоинтов, статус-коды и структуру ответов.
+- **Общие фикстуры (`backend/tests/conftest.py`)**:
+  - переиспользуемый async-клиент и event loop setup.
 
-Run tests from `backend/`:
+Запуск тестов из директории `backend/`:
 
 ```bash
 pytest -v
 ```
 
-Coverage report:
+Отчет покрытия:
 
 ```bash
 pytest -v --cov=app --cov-report=term-missing
@@ -188,11 +188,11 @@ pytest -v --cov=app --cov-report=term-missing
 
 ## Roadmap
 
-- Deliver frontend application within the planned monorepo structure.
-- Add CI pipeline (linters, tests, coverage reports).
-- Extend domain logic (promo codes, richer delivery statuses, notifications).
-- Harden production setup with observability (structured logs, metrics, healthchecks).
+- Реализовать frontend-приложение в рамках запланированной monorepo-структуры.
+- Добавить CI-пайплайн (линтеры, тесты, отчеты покрытия).
+- Расширить доменную логику (промокоды, более детальные статусы доставки, уведомления).
+- Усилить production-конфигурацию observability-инструментами (структурные логи, метрики, healthchecks).
 
-## License
+## Лицензия
 
 MIT
