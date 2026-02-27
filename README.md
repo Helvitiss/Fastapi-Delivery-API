@@ -1,123 +1,158 @@
-# FastAPI Delivery Service API 🍕
+# FastAPI Delivery API
 
-[![Python](https://img.shields.io/badge/python-3.12-blue.svg)](https://www.python.org/downloads/release/python-3120/)
-[![FastAPI](https://img.shields.io/badge/FastAPI-0.128.0-05998b.svg)](https://fastapi.tiangolo.com/)
-[![Tests](https://img.shields.io/badge/tests-27%20passed-brightgreen.svg)]()
-[![Coverage](https://img.shields.io/badge/coverage-100%25-brightgreen.svg)]()
-[![License](https://img.shields.io/badge/license-MIT-blue.svg)]()
+Backend-проект для сервиса доставки еды, который можно показать как production-ориентированную основу: с продуманной архитектурой, разграничением ролей, тестами и инфраструктурой для дальнейшего масштабирования.
 
-Современный, быстрый и надежный бэкенд для сервиса доставки еды. Проект разработан с упором на чистоту кода, типобезопасность и автоматическое тестирование.
+## О проекте
 
----
+Этот репозиторий изначально задумывался как часть монорепозитория (backend + frontend). Сейчас в фокусе — API-слой, который уже покрывает ключевые бизнес-сценарии доставки еды:
 
-##  Архитектура
+- регистрация/вход по номеру телефона и OTP;
+- работа с каталогом, корзиной, адресами и заказами;
+- административные сценарии для управления меню и заказами;
+- миграции БД, контейнеризация и автоматизированные тесты.
 
-Проект следует принципам **Layered Architecture** (Многослойная архитектура), что обеспечивает слабую связанность компонентов и легкость тестирования.
+Frontend-публичная часть запланирована как следующий этап развития, поэтому структура проекта уже подготовлена под полноценный fullstack-продукт.
 
-```mermaid
-graph TD
-    Client[API Client / Swagger] --> Routers[API Routers /User & /Admin/]
-    Routers --> Services[Business Logic Services]
-    Services --> Repositories[Data Access Repositories]
-    Repositories --> DB[(PostgreSQL)]
-    
-    subgraph Layers
-        Routers
-        Services
-        Repositories
-    end
+## Почему этот проект релевантен для работодателя
+
+- Четко выделены слои ответственности: API, сервисы, репозитории, модели.
+- Асинхронный стек (FastAPI + SQLAlchemy Async), ориентированный на высокую нагрузку.
+- Предусмотрены роли пользователя и администратора, что приближает проект к реальным продуктовым требованиям.
+- Есть тестовая база (unit + integration), которую можно использовать как фундамент для CI/CD.
+- Проект удобно запускать локально и в Docker-среде.
+
+## Основные возможности API
+
+### Пользовательская зона
+- `auth`: OTP-аутентификация и получение JWT-токенов.
+- `categories` / `dishes`: просмотр категорий и позиций меню.
+- `cart`: добавление и изменение позиций в корзине с расчетом стоимости.
+- `addresses`: управление адресами доставки.
+- `orders`: оформление и просмотр заказов.
+
+### Административная зона
+- управление категориями;
+- управление блюдами;
+- управление заказами;
+- создание/повышение администратора через CLI-команду.
+
+## Архитектура
+
+Проект реализован в layered-подходе:
+
+- **API (routers)** — HTTP-контракты и валидация входных данных;
+- **Services** — бизнес-логика;
+- **Repositories** — доступ к данным;
+- **Models/Schemas** — модели БД и DTO;
+- **Core** — настройки, обработка ошибок, инфраструктурные компоненты.
+
+Такой подход упрощает тестирование, поддержку и расширение функционала.
+
+## Технологический стек
+
+- **Python 3.12**
+- **FastAPI**
+- **SQLAlchemy 2.0 (Async)**
+- **PostgreSQL**
+- **Alembic**
+- **JWT + OTP**
+- **Pytest / pytest-asyncio / pytest-cov**
+- **Docker / Docker Compose**
+
+## Структура репозитория
+
+```text
+.
+├── backend/
+│   ├── app/
+│   │   ├── api/
+│   │   ├── services/
+│   │   ├── repositories/
+│   │   ├── models/
+│   │   ├── schemas/
+│   │   ├── dependencies/
+│   │   ├── core/
+│   │   └── cli/
+│   ├── alembic/
+│   ├── tests/
+│   │   ├── unit/
+│   │   └── integration/
+│   ├── Dockerfile
+│   ├── requirements.txt
+│   └── pytest.ini
+├── docker-compose.yml
+└── README.md
 ```
 
-##  Технологический стек
+## Быстрый старт
 
-*   **Core:** FastAPI (Async), Pydantic v2.
-*   **Database:** PostgreSQL + SQLAlchemy 2.0 (Async Engine).
-*   **Auth:** JWT + OTP (аутентификация по номеру телефона).
-*   **Infrastructure:** Docker, Docker Compose, Alembic (миграции).
-*   **CI/QA:** Pytest (Unit & Integration), Pytest-cov.
+### Вариант 1: Docker (рекомендуется)
 
-##  Ключевые возможности
+1. Создайте файл `backend/.env`.
+2. Заполните переменные окружения (пример ниже).
+3. Запустите контейнеры:
 
-*   **Auth Flow:** Безопасный вход без пароля (OTP через имитацию SMS).
-*   **Cart System:** Умная корзина с расчетом стоимости и проверкой доступности блюд.
-*   **Admin Power:** Полное управление меню, категориями и заказами через `/admin` эндпоинты.
-*   **Robustness:** Обработка ошибок на глобальном уровне с понятными ответами.
-*   **Reliability:** 100% покрытие бизнес-логики тестами.
-
----
-
-##  Конфигурация (.env)
-
-| Переменная | Описание | Значение по умолчанию |
-| :--- | :--- | :--- |
-| `DB_URL` | URL подключения к БД | `postgresql+asyncpg://...` |
-| `SECRET_KEY` | Ключ для подписи JWT | *сгенерируйте свой* |
-| `ALGORITHM` | Алгоритм шифрования JWT | `HS256` |
-| `ACCESS_TOKEN_EXPIRE_MINUTES` | Время жизни токена | `1440` (24 часа) |
-| `OTP_EXPIRE_MINUTES` | Время жизни OTP кода | `5` |
-
----
-
-##  Быстрый старт
-
-### Через Docker (Рекомендуется)
-1. Скопируйте шаблон настроек: `cp .env.example .env`
-2. Запустите проект:
 ```bash
 docker compose up -d --build
 ```
-*Swagger UI будет доступен по адресу: [http://localhost:8000/docs](http://localhost:8000/docs)*
 
-### Локально
-1. Создайте venv и установите зависимости: `pip install -r requirements.txt`
-2. Примените миграции: `alembic upgrade head`
-3. Запустите сервер: `uvicorn app.main:app --reload`
+После запуска документация будет доступна по адресу:
 
+- Swagger UI: `http://localhost:8000/docs`
+- ReDoc: `http://localhost:8000/redoc`
 
-### Создание администратора через CLI
+### Вариант 2: Локальный запуск backend
 
-Когда контейнер с API уже запущен, можно создать администратора (или повысить существующего пользователя до администратора) по номеру телефона:
+```bash
+cd backend
+python -m venv .venv
+source .venv/bin/activate
+pip install -r requirements.txt
+alembic upgrade head
+uvicorn app.main:app --reload --host 0.0.0.0 --port 8000
+```
+
+## Переменные окружения (`backend/.env`)
+
+```env
+SECRET_KEY=your_secret_key
+DB_URL=postgresql+asyncpg://fastapidelivery_user:fastapidelivery@db:5432/fastapidelivery_db
+ALGORITHM=HS256
+ACCESS_TOKEN_EXPIRE_MINUTES=1440
+OTP_EXPIRE_MINUTES=5
+```
+
+Для локального запуска без Docker замените `db` в `DB_URL` на `localhost` (или фактический хост вашей БД).
+
+## CLI: создание администратора
+
+После запуска API-контейнера можно создать администратора (или повысить существующего пользователя):
 
 ```bash
 docker exec -it fastapidelivery_api python -m app.cli.create_admin +79990001122 --name "Super Admin"
 ```
 
-Что делает команда:
-- если пользователь с таким телефоном есть — меняет роль на `admin`;
-- если пользователя нет — создаёт нового сразу с ролью `admin`.
+## Тестирование
 
+Из директории `backend/`:
 
----
-
-##  Тестирование и Качество
-
-Мы серьезно относимся к стабильности. В проекте настроены юнит-тесты для всей бизнес-логики и интеграционные тесты для всех API вызовов.
-
-**Запуск тестов с генерацией отчета о покрытии:**
 ```bash
-pytest -v tests/ --cov=app --cov-report=term-missing
+pytest -v
 ```
 
-**Статистика:**
-- **Unit-тесты:** 15 (Сервисы)
-- **Integration-тесты:** 12 (API)
-- **Итого:** 27 тестов, **100% покрытие**.
+При необходимости с coverage:
 
----
-
-##  Структура проекта
-
-```text
-app/
-├── api/          # Слой представления (FastAPI Routers)
-├── core/         # Глобальные настройки, БД, исключения
-├── dependencies/ # Внедрение зависимостей (DI)
-├── models/       # SQLAlchemy модели (Data Layer)
-├── repositories/ # Слой доступа к данным (CRUD)
-├── schemas/      # Pydantic схемы (DTO)
-└── services/     # Бизнес-логика (Business Layer)
-tests/            # Тестовая база проекта
+```bash
+pytest -v --cov=app --cov-report=term-missing
 ```
 
-##  Лицензия
-Этот проект распространяется под лицензией MIT.
+## План развития
+
+- Реализация клиентского frontend-приложения в рамках общей monorepo-структуры.
+- Добавление CI-пайплайна (линтеры, тесты, отчеты покрытия).
+- Расширение доменной логики (промокоды, статусы доставки, уведомления).
+- Подготовка production-конфигурации с observability (логирование, метрики, healthchecks).
+
+## Лицензия
+
+MIT
