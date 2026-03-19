@@ -1,0 +1,29 @@
+[project]
+name = "backend"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.13"
+dependencies = [
+    "fastapi",
+    "uvicorn",
+    "sqlalchemy",
+    "asyncpg",
+    "alembic",
+    "pydantic-settings",
+    "python-dotenv",
+    "passlib",
+    "bcrypt",
+    "python-jose",
+    "email-validator",
+    "python-multipart",
+    "aiofiles>=25.1.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest",
+    "pytest-asyncio",
+    "pytest-cov",
+    "httpx"
+]
