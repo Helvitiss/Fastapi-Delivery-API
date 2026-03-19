@@ -1,9 +1,15 @@
-from sqlalchemy import ForeignKey, Integer, UniqueConstraint
+from sqlalchemy import ForeignKey, UniqueConstraint
 
 from app.core.database import Base
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from app.models.user import UserModel
+    from app.models.dish import DishModel
+    from app.models.cart_item import CartItemModel
 
 class CartModel(Base):
     __tablename__ = 'cart'

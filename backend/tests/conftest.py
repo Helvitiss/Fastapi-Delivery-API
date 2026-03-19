@@ -1,11 +1,10 @@
 import asyncio
 import pytest
 from httpx import ASGITransport, AsyncClient
-from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine, async_sessionmaker
+from sqlalchemy.ext.asyncio import AsyncSession
 from unittest.mock import AsyncMock
 
 from app.main import app
-from app.dependencies.main import get_async_db
 
 # Создаем тестовый движок (может быть как SQLite в памяти, так и мок)
 # Для простых юнит-тестов мы чаще будем использовать моки сессий напрямую.

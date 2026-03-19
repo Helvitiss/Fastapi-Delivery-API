@@ -1,7 +1,6 @@
 
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends
 
-from app.core.exceptions import BadRequestError
 from app.dependencies.auth import get_auth_service
 from app.schemas.auth import OTPSentResponse, TokenResponse, OTPVerifyRequest, OTPRequest
 

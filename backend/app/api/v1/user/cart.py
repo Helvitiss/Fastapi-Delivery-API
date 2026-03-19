@@ -1,7 +1,7 @@
-from fastapi import APIRouter, Depends, Body
+from fastapi import APIRouter, Depends
 from app.dependencies.auth import get_current_user
 from app.models import UserModel
-from app.schemas.cart import CartWithItemsResponse, CartItemCreate, CartItemRead, CartRead
+from app.schemas.cart import CartWithItemsResponse, CartItemCreate, CartItemRead
 from app.services.cart import CartService
 from app.dependencies.main import get_cart_service
 

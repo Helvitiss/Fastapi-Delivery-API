@@ -1,6 +1,5 @@
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.core.exceptions import NotFoundError, BadRequestError
 from app.models import AddressModel
 from app.repositories.address import AddressRepository
 from app.schemas.address import AddressCreate

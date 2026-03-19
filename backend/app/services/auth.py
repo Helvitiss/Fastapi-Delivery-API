@@ -3,7 +3,7 @@ from datetime import timedelta, datetime, UTC
 
 from sqlalchemy.ext.asyncio import AsyncSession
 from app.core.config import settings
-from app.core.exceptions import BadRequestError, UnauthorizedError
+from app.core.exceptions import UnauthorizedError
 from app.repositories.auth import AuthRepository
 from app.repositories.user import UserRepository
 from app.core.security import create_otp_code, create_access_token

@@ -1,4 +1,3 @@
-import uvicorn
 from fastapi import FastAPI, Request
 from fastapi.responses import JSONResponse
 from starlette.staticfiles import StaticFiles

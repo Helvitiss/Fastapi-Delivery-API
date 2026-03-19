@@ -1,7 +1,6 @@
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter
 from fastapi.params import Depends
 
-from app.core.exceptions import NotFoundError
 from app.dependencies.auth import get_current_user
 from app.dependencies.main import get_address_service
 from app.models import UserModel

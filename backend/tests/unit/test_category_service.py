@@ -1,8 +1,8 @@
 import pytest
-from unittest.mock import AsyncMock, MagicMock
+from unittest.mock import AsyncMock
 from app.services.category import CategoryService
 from app.repositories.category import CategoryRepository
-from app.schemas.category import CategoryCreate, CategoryUpdate
+from app.schemas.category import CategoryCreate
 from app.models import CategoryModel
 
 @pytest.fixture

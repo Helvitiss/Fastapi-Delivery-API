@@ -5,6 +5,13 @@ from sqlalchemy import String
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from app.models.enums import UserRole
 
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from app.models.cart import CartModel
+    from app.models.order import OrderModel
+
+
 class UserModel(Base):
     __tablename__ = "user"
     id: Mapped[int] = mapped_column(primary_key=True)

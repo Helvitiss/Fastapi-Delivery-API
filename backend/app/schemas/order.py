@@ -1,7 +1,6 @@
 from datetime import datetime
 from pydantic import BaseModel, Field, ConfigDict
 from app.models.enums import OrderStatus
-from app.schemas.dish import DishRead
 
 
 class OrderItemRead(BaseModel):

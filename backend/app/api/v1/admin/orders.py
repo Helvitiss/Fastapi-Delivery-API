@@ -1,7 +1,6 @@
 from fastapi import APIRouter, Depends
 from app.dependencies.auth import is_admin
 from app.dependencies.main import get_order_service
-from app.models import UserModel
 from app.schemas.order import OrderRead, OrderStatusSchema
 from app.services.order import OrderService
 

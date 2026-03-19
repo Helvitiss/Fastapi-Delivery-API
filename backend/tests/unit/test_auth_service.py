@@ -1,6 +1,5 @@
 import pytest
 from unittest.mock import AsyncMock, patch
-from datetime import datetime, UTC
 from app.services.auth import AuthService
 from app.repositories.user import UserRepository
 from app.repositories.auth import AuthRepository

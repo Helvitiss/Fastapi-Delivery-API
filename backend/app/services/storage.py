@@ -2,7 +2,6 @@ import uuid
 from logging import getLogger
 
 import aiofiles
-from pathlib import Path
 from fastapi import UploadFile
 
 

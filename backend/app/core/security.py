@@ -1,8 +1,6 @@
 from datetime import datetime, timedelta, UTC
 
-from fastapi import HTTPException
-from jose import jwt, JWTError
-from passlib.context import CryptContext
+from jose import jwt
 
 from app.core.config import settings
 from random import randint

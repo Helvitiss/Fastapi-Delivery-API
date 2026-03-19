@@ -1,4 +1,3 @@
-from typing import List
 from fastapi import APIRouter, Depends
 
 from app.schemas.dish import DishRead

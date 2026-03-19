@@ -3,7 +3,6 @@ from unittest.mock import AsyncMock, MagicMock
 from app.services.order import OrderService
 from app.repositories.order import OrderRepository
 from app.repositories.cart import CartRepository, CartItemRepository
-from app.models import OrderModel, OrderItemModel
 from app.models.dish import DishModel
 from app.core.exceptions import BadRequestError
 

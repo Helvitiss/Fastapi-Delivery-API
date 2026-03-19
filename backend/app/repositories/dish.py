@@ -17,7 +17,7 @@ class DishRepository:
     async def get_by_id(self, dish_id: int, include_inactive: bool = False) -> DishModel:
         stmt = select(DishModel).where(DishModel.id == dish_id)
         if not include_inactive:
-            stmt = stmt.where(DishModel.is_available == True)
+            stmt = stmt.where(DishModel.is_available)
         
         result = await self.session.execute(stmt)
         dish = result.scalar_one_or_none()
@@ -29,7 +29,7 @@ class DishRepository:
     async def get_all(self, include_inactive: bool = False) -> list[DishModel]:
         stmt = select(DishModel)
         if not include_inactive:
-            stmt = stmt.where(DishModel.is_available == True)
+            stmt = stmt.where(DishModel.is_available)
         
         result = await self.session.scalars(stmt)
         return result.all()

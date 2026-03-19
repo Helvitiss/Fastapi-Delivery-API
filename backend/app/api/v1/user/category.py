@@ -1,9 +1,8 @@
-from app.dependencies.main import get_dish_service, get_category_service
-from app.schemas.category import CategoryRead, CategoryCreate, CategoryUpdate
+from app.dependencies.main import get_category_service
+from app.schemas.category import CategoryRead
 from fastapi import APIRouter, Depends
 
 from app.services.category import CategoryService
-from app.services.dish import DishService
 
 router = APIRouter(prefix="/categories", tags=["Категории"])
 

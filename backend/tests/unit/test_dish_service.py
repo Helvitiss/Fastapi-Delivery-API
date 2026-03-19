@@ -4,7 +4,7 @@ from app.services.dish import DishService
 from app.repositories.dish import DishRepository
 from app.repositories.category import CategoryRepository
 from app.services.storage import LocalStorageService
-from app.schemas.dish import DishCreate, DishUpdate
+from app.schemas.dish import DishCreate
 from app.models import DishModel
 
 @pytest.fixture
