@@ -14,6 +14,7 @@ from app.core.exceptions import (
 )
 
 app = FastAPI(title="Доставка еды API")
+MEDIA_ROOT.mkdir(parents=True, exist_ok=True)
 
 
 # Глобальный обработчик для всех исключений приложения

@@ -1,4 +1,4 @@
-from unittest.mock import AsyncMock, MagicMock
+from unittest.mock import AsyncMock, MagicMock, patch
 
 import pytest
 
@@ -61,15 +61,15 @@ async def test_create_order_success(
     # Мокаем сохранение заказа
     order_repo.create.side_effect = lambda x: setattr(x, "id", 1) or x
 
-    # Вызов
-    order = await order_service.create_order(user_id, address_id)
+    with patch("app.services.order.send_sms_for_customer.delay") as delay_mock:
+        order = await order_service.create_order(user_id, address_id)
 
-    # Проверки
     assert order.total_price == 200
     assert order.user_id == user_id
     order_repo.create.assert_called_once()
     order_repo.create_items.assert_called_once()
     cart_repo.clear.assert_called_once_with(user_id)
+    delay_mock.assert_called_once_with("79998887766", 1)
 
 
 async def test_create_order_empty_cart(order_service, cart_repo, cart_item_repo):

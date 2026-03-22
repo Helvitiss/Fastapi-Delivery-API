@@ -1,4 +1,3 @@
-import asyncio
 from unittest.mock import AsyncMock
 
 import pytest
@@ -9,14 +8,6 @@ from app.main import app
 
 # Создаем тестовый движок (может быть как SQLite в памяти, так и мок)
 # Для простых юнит-тестов мы чаще будем использовать моки сессий напрямую.
-
-
-@pytest.fixture(scope="session")
-def event_loop():
-    """Создает экземпляр цикла событий для каждой тестовой сессии."""
-    loop = asyncio.get_event_loop_policy().new_event_loop()
-    yield loop
-    loop.close()
 
 
 @pytest.fixture

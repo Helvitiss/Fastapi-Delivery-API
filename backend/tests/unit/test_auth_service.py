@@ -27,13 +27,13 @@ def auth_service(mock_session, user_repo, auth_repo):
 async def test_request_otp(auth_service, auth_repo):
     phone = "79998887766"
 
-    # Вызов
-    expires = await auth_service.request_otp(phone)
+    with patch("app.services.auth.send_otp_code_task.delay") as delay_mock:
+        expires = await auth_service.request_otp(phone)
 
-    # Проверки
     assert isinstance(expires, int)
     auth_repo.delete_old_otps.assert_called_once_with(phone)
     auth_repo.create_otp.assert_called_once()
+    delay_mock.assert_called_once()
 
 
 async def test_verify_otp_new_user(auth_service, user_repo, auth_repo):
