@@ -1,12 +1,15 @@
 from celery import Celery
+
 from app.core.config import settings
 
-
-
-
 celery_app = Celery(
-    brocker=settings.CELERY_BROKER_URL,
+    "delivery",
+    broker=settings.CELERY_BROKER_URL,
     backend=settings.CELERY_RESULT_BACKEND,
+    include=[
+        "app.tasks.auth",
+        "app.tasks.order",
+    ],
 )
 
 celery_app.conf.update(
@@ -16,6 +19,3 @@ celery_app.conf.update(
     task_ignore_result=True,
     broker_connection_retry_on_startup=True,
 )
-
-
-celery_app.autodiscover_tasks(["app.tasks"])
