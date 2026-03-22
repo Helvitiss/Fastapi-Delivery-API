@@ -1,9 +1,9 @@
 import logging
 from pathlib import Path
+
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 LOG_FORMAT = "%(asctime)s | %(levelname)s | %(name)s | %(message)s"
-
 
 
 BASE_DIR = Path(__file__).resolve().parent.parent.parent
@@ -24,16 +24,12 @@ class Settings(BaseSettings):
     CELERY_RESULT_BACKEND: str = "redis://localhost:6379/1"
 
     model_config = SettingsConfigDict(
-        env_file= BASE_DIR / ".env",
+        env_file=BASE_DIR / ".env",
         env_file_encoding="utf-8",
     )
 
 
-logging.basicConfig(
-    level=logging.INFO,
-    format=LOG_FORMAT
-)
-
+logging.basicConfig(level=logging.INFO, format=LOG_FORMAT)
 
 
 settings = Settings()

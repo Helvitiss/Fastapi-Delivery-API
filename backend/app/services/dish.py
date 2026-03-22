@@ -12,17 +12,16 @@ from app.services.storage import LocalStorageService
 
 class DishService:
     def __init__(
-        self, 
+        self,
         session: AsyncSession,
         dish_repo: DishRepository,
         category_repo: CategoryRepository,
-        storage_service: LocalStorageService
+        storage_service: LocalStorageService,
     ):
         self.session = session
         self.dish_repo = dish_repo
         self.category_repo = category_repo
         self.storage_service = storage_service
-
 
     async def get_dish_by_id(self, dish_id: int, include_inactive=False) -> DishModel:
         dish = await self.dish_repo.get_by_id(dish_id, include_inactive=include_inactive)
@@ -42,7 +41,7 @@ class DishService:
         old_image_url = dish.image_url
         dish.image_url = image_url
         await self.session.flush()
-        getLogger().info(f'new image url: {image_url}')
+        getLogger().info(f"new image url: {image_url}")
         if old_image_url is not None:
             self.storage_service.delete_file(old_image_url)
         return image_url

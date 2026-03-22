@@ -1,8 +1,8 @@
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.models import AddressModel
 from app.core.exceptions import NotFoundError
+from app.models import AddressModel
 
 
 class AddressRepository:
@@ -21,12 +21,11 @@ class AddressRepository:
 
     async def delete(self, address_id: int, user_id: int) -> None:
         stmt = select(AddressModel).where(
-            AddressModel.id == address_id, 
-            AddressModel.user_id == user_id
+            AddressModel.id == address_id, AddressModel.user_id == user_id
         )
         result = await self.session.execute(stmt)
         address = result.scalar_one_or_none()
         if address is None:
-            raise NotFoundError('Address not found')
+            raise NotFoundError("Address not found")
         await self.session.delete(address)
         await self.session.flush()

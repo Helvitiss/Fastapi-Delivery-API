@@ -4,12 +4,10 @@ from logging import getLogger
 import aiofiles
 from fastapi import UploadFile
 
-
 from app.core.config import MEDIA_ROOT, MEDIA_URL
 
 
 class LocalStorageService:
-
     def __init__(self):
         self.media_root = MEDIA_ROOT
         self.media_url = MEDIA_URL
@@ -24,8 +22,6 @@ class LocalStorageService:
         relative_path = f"dishes/{filename}"
         full_path = self.media_root / relative_path
 
-
-
         async with aiofiles.open(full_path, "wb") as buffer:
             content = await file.read()
             await buffer.write(content)
@@ -38,4 +34,3 @@ class LocalStorageService:
         getLogger().info(f"Delete {full_path}")
         if full_path.exists():
             full_path.unlink()
-

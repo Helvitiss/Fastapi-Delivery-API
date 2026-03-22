@@ -1,8 +1,8 @@
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.models import CategoryModel
 from app.core.exceptions import NotFoundError
+from app.models import CategoryModel
 
 
 class CategoryRepository:

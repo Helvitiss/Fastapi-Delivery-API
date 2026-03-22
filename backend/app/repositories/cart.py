@@ -1,9 +1,9 @@
-from sqlalchemy import select, delete
+from sqlalchemy import delete, select
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
 
-from app.models.cart import CartModel, CartItemModel
+from app.models.cart import CartItemModel, CartModel
 
 
 class CartRepository:
@@ -50,9 +50,9 @@ class CartItemRepository:
         return instance
 
     async def find_by_cart_and_dish(
-            self,
-            cart_id: int,
-            dish_id: int,
+        self,
+        cart_id: int,
+        dish_id: int,
     ) -> CartItemModel | None:
         stmt = select(CartItemModel).where(
             CartItemModel.cart_id == cart_id,
@@ -62,18 +62,19 @@ class CartItemRepository:
         return result.scalar_one_or_none()
 
     async def get_all_with_info(self, cart_id: int) -> list[CartItemModel]:
-        stmt = (select(CartItemModel)
-                .where(CartItemModel.cart_id == cart_id)
-                .options(selectinload(CartItemModel.dish))
-                )
+        stmt = (
+            select(CartItemModel)
+            .where(CartItemModel.cart_id == cart_id)
+            .options(selectinload(CartItemModel.dish))
+        )
         result = await self.session.scalars(stmt)
         return result.all()
 
     async def add_item_to_cart(
-            self,
-            cart_id: int,
-            dish_id: int,
-            quantity: int = 1,
+        self,
+        cart_id: int,
+        dish_id: int,
+        quantity: int = 1,
     ) -> CartItemModel:
         item = await self.find_by_cart_and_dish(cart_id, dish_id)
 

@@ -1,11 +1,10 @@
+from typing import TYPE_CHECKING
 
-
-from app.core.database import Base
 from sqlalchemy import String
 from sqlalchemy.orm import Mapped, mapped_column, relationship
-from app.models.enums import UserRole
 
-from typing import TYPE_CHECKING
+from app.core.database import Base
+from app.models.enums import UserRole
 
 if TYPE_CHECKING:
     from app.models.cart import CartModel
@@ -18,7 +17,6 @@ class UserModel(Base):
     name: Mapped[str | None] = mapped_column(String(30), nullable=True)
     phone: Mapped[str] = mapped_column(String(20), index=True)
     role: Mapped[UserRole] = mapped_column(default=UserRole.USER)
-
 
     cart: Mapped["CartModel"] = relationship("CartModel", back_populates="user")
     orders: Mapped[list["OrderModel"]] = relationship("OrderModel", back_populates="user")

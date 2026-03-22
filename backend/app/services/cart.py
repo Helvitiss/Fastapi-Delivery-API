@@ -2,63 +2,54 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.exceptions import NotFoundError
 from app.models.cart import CartItemModel, CartModel
-from app.repositories.cart import CartRepository, CartItemRepository
+from app.repositories.cart import CartItemRepository, CartRepository
 from app.repositories.dish import DishRepository
 from app.schemas.cart import CartRead
 
 
 class CartService:
     def __init__(
-        self, 
+        self,
         session: AsyncSession,
         cart_repo: CartRepository,
         cart_item_repo: CartItemRepository,
-        dish_repo: DishRepository
+        dish_repo: DishRepository,
     ):
         self.session = session
         self.cart_repo = cart_repo
         self.cart_item_repo = cart_item_repo
         self.dish_repo = dish_repo
 
-
-
-
     async def get_or_create_by_user_id(self, user_id: int) -> CartModel:
         result = await self.cart_repo.get_or_create_by_user_id(user_id)
         return result
 
-
     async def get_items_by_user_id(self, user_id: int) -> CartRead:
 
         cart = await self.get_or_create_by_user_id(user_id)
-
 
         items = await self.cart_item_repo.get_all_with_info(cart.id)
 
         item_list = []
         total_price = 0
 
-
         for item in items:
-
             total_dish_price = item.dish.price * item.quantity
             total_price += total_dish_price
-            result_item = {'dish': item.dish,
-                           'quantity': item.quantity,
-                           'total_dish_price': total_dish_price, }
+            result_item = {
+                "dish": item.dish,
+                "quantity": item.quantity,
+                "total_dish_price": total_dish_price,
+            }
             item_list.append(result_item)
 
         result = {
-            'cart_id': cart.id,
-            'total_price': total_price,
-            'items': item_list,
+            "cart_id": cart.id,
+            "total_price": total_price,
+            "items": item_list,
         }
 
         return result
-
-
-
-
 
     async def add_dish(self, user_id: int, dish_id: int, quantity: int = 1) -> CartItemModel:
 
@@ -88,11 +79,8 @@ class CartService:
             cart_item.quantity = quantity
             await self.session.flush()
 
-
     async def remove_dish(self, user_id: int, dish_id: int) -> None:
         await self.update(user_id, dish_id, 0)
 
-
     async def clear(self, user_id: int) -> None:
         await self.cart_repo.clear(user_id)
-

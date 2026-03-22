@@ -1,5 +1,7 @@
 from datetime import datetime
-from pydantic import BaseModel, Field, ConfigDict
+
+from pydantic import BaseModel, ConfigDict, Field
+
 from app.models.enums import OrderStatus
 
 
@@ -9,7 +11,7 @@ class OrderItemRead(BaseModel):
     dish_name: str = Field(..., description="Название блюда на момент заказа")
     price: int = Field(..., description="Размер цены на момент заказа")
     quantity: int = Field(..., description="Количество")
-    
+
     model_config = ConfigDict(from_attributes=True)
 
 

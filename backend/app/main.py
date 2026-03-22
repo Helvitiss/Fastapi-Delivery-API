@@ -5,11 +5,16 @@ from starlette.staticfiles import StaticFiles
 from app.api.v1 import base_router
 from app.core.config import MEDIA_ROOT
 from app.core.exceptions import (
-    BaseAppError, NotFoundError, BadRequestError, 
-    UnauthorizedError, ForbiddenError, ConflictError
+    BadRequestError,
+    BaseAppError,
+    ConflictError,
+    ForbiddenError,
+    NotFoundError,
+    UnauthorizedError,
 )
 
 app = FastAPI(title="Доставка еды API")
+
 
 # Глобальный обработчик для всех исключений приложения
 @app.exception_handler(BaseAppError)
@@ -25,11 +30,12 @@ async def app_exception_handler(request: Request, exc: BaseAppError):
         status_code = 403
     elif isinstance(exc, ConflictError):
         status_code = 409
-        
+
     return JSONResponse(
         status_code=status_code,
         content={"detail": exc.message},
     )
+
 
 app.mount("/media", StaticFiles(directory=MEDIA_ROOT), name="media")
 app.include_router(base_router)

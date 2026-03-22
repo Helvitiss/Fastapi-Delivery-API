@@ -25,11 +25,13 @@ class AuthRepository:
         await self.session.execute(stmt)
         await self.session.flush()
 
-    async def get_valid_otp(self, phone_number: str, code: str, now: datetime) -> OTPCodeModel | None:
+    async def get_valid_otp(
+        self, phone_number: str, code: str, now: datetime
+    ) -> OTPCodeModel | None:
         stmt = select(OTPCodeModel).where(
             OTPCodeModel.phone_number == phone_number,
             OTPCodeModel.expires_at > now,
-            OTPCodeModel.code == code
+            OTPCodeModel.code == code,
         )
         result = await self.session.execute(stmt)
         return result.scalar_one_or_none()

@@ -1,5 +1,4 @@
-
-from pydantic import BaseModel, Field, ConfigDict
+from pydantic import BaseModel, ConfigDict, Field
 
 
 class DishBase(BaseModel):
@@ -9,6 +8,7 @@ class DishBase(BaseModel):
     description: str | None = None
     is_available: bool = True
     category_id: int
+
 
 class DishCreate(DishBase):
     pass
@@ -27,4 +27,4 @@ class DishUpdate(BaseModel):
     weight: int | None = Field(None, gt=0, description="Вес блюда в граммах")
     description: str | None = Field(None, description="Описание блюда")
     is_available: bool | None = Field(None, description="Доступность блюда")
-    category_id: int | None = Field(None,gt=0, description="ID категории блюда")
+    category_id: int | None = Field(None, gt=0, description="ID категории блюда")

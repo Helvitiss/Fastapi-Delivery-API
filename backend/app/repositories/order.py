@@ -1,9 +1,9 @@
-from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
+from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
 
-from app.models import OrderModel, OrderItemModel
 from app.core.exceptions import NotFoundError
+from app.models import OrderItemModel, OrderModel
 
 
 class OrderRepository:
@@ -20,22 +20,27 @@ class OrderRepository:
         await self.session.flush()
 
     async def get_by_id(self, order_id: int) -> OrderModel:
-        stmt = select(OrderModel).where(OrderModel.id == order_id).options(selectinload(OrderModel.items))
+        stmt = (
+            select(OrderModel)
+            .where(OrderModel.id == order_id)
+            .options(selectinload(OrderModel.items))
+        )
         result = await self.session.execute(stmt)
         order = result.scalar_one_or_none()
         if order is None:
-            raise NotFoundError('Order not found')
+            raise NotFoundError("Order not found")
         return order
 
     async def get_by_id_and_user(self, order_id: int, user_id: int) -> OrderModel:
-        stmt = select(OrderModel).where(
-            OrderModel.id == order_id, 
-            OrderModel.user_id == user_id
-        ).options(selectinload(OrderModel.items))
+        stmt = (
+            select(OrderModel)
+            .where(OrderModel.id == order_id, OrderModel.user_id == user_id)
+            .options(selectinload(OrderModel.items))
+        )
         result = await self.session.execute(stmt)
         order = result.scalar_one_or_none()
         if order is None:
-            raise NotFoundError('Order not found')
+            raise NotFoundError("Order not found")
         return order
 
     async def get_user_orders(self, user_id: int) -> list[OrderModel]:

@@ -5,6 +5,7 @@ class UserCreate(BaseModel):
     name: str
     phone: str
 
+
 class UserRead(BaseModel):
     id: int
     name: str
@@ -13,6 +14,7 @@ class UserRead(BaseModel):
     model_config = {
         "from_attributes": True,
     }
+
 
 class UserUpdate(UserCreate):
     name: str

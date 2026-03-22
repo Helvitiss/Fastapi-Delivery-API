@@ -23,7 +23,9 @@ class CategoryService:
         category_model = await self.category_repo.get_by_id(category_id)
         return category_model
 
-    async def update_category(self, category_id: int, category_schema: CategoryUpdate) -> CategoryModel:
+    async def update_category(
+        self, category_id: int, category_schema: CategoryUpdate
+    ) -> CategoryModel:
         category = await self.get_category_by_id(category_id)
 
         for k, v in category_schema.model_dump(exclude_unset=True).items():

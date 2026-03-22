@@ -1,8 +1,8 @@
-from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
+from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.models import UserModel
 from app.core.exceptions import NotFoundError
+from app.models import UserModel
 
 
 class UserRepository:
@@ -27,4 +27,3 @@ class UserRepository:
         self.session.add(user)
         await self.session.flush()
         return user
-

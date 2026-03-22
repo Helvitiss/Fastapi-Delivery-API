@@ -12,12 +12,27 @@ services:
     volumes:
       - postgres_data:/var/lib/postgresql/data
     healthcheck:
-      test: [ "CMD-SHELL", "pg_isready -U fastapidelivery_user -d fastapidelivery_db" ]
+      test: ["CMD-SHELL", "pg_isready -U fastapidelivery_user -d fastapidelivery_db"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  redis:
+    image: redis:7-alpine
+    container_name: fastapidelivery_redis
+    restart: always
+    ports:
+      - "6379:6379"
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
       interval: 5s
       timeout: 5s
       retries: 10
 
   migrate:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
     image: fastapidelivery-api:latest
     container_name: fastapidelivery_migrate
     env_file:
@@ -25,7 +40,10 @@ services:
     depends_on:
       db:
         condition: service_healthy
-    command: [ "uv", "run", "alembic", "upgrade", "head" ]
+      redis:
+        condition: service_healthy
+    command: ["uv", "run", "alembic", "upgrade", "head"]
+    restart: "no"
 
   api:
     build:
@@ -41,8 +59,33 @@ services:
     depends_on:
       db:
         condition: service_healthy
+      redis:
+        condition: service_healthy
+      migrate:
+        condition: service_completed_successfully
     volumes:
       - ./media:/app/media
+    command: ["uv", "run", "uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000"]
+
+  worker:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    image: fastapidelivery-api:latest
+    container_name: fastapidelivery_worker
+    restart: always
+    env_file:
+      - ./backend/.env
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      migrate:
+        condition: service_completed_successfully
+    volumes:
+      - ./media:/app/media
+    command: ["uv", "run", "celery", "-A", "app.celery_app.celery_app", "worker", "--loglevel=info"]
 
 volumes:
   postgres_data:

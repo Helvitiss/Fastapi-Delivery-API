@@ -1,8 +1,8 @@
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.models import DishModel
 from app.core.exceptions import NotFoundError
+from app.models import DishModel
 
 
 class DishRepository:
@@ -18,7 +18,7 @@ class DishRepository:
         stmt = select(DishModel).where(DishModel.id == dish_id)
         if not include_inactive:
             stmt = stmt.where(DishModel.is_available)
-        
+
         result = await self.session.execute(stmt)
         dish = result.scalar_one_or_none()
 
@@ -30,7 +30,7 @@ class DishRepository:
         stmt = select(DishModel)
         if not include_inactive:
             stmt = stmt.where(DishModel.is_available)
-        
+
         result = await self.session.scalars(stmt)
         return result.all()
 

@@ -1,24 +1,21 @@
-from datetime import datetime, timedelta, UTC
+from datetime import UTC, datetime, timedelta
+from random import randint
 
 from jose import jwt
 
 from app.core.config import settings
-from random import randint
-
 
 
 def create_otp_code():
     return f"{randint(0, 999999):06d}"
 
 
-
 def create_access_token(subject: str) -> str:
     expire = datetime.now(UTC) + timedelta(minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES)
 
-    payload ={
-        'sub': subject,
-        'exp': expire,
-
+    payload = {
+        "sub": subject,
+        "exp": expire,
     }
 
     return jwt.encode(
@@ -27,8 +24,8 @@ def create_access_token(subject: str) -> str:
         algorithm=settings.ALGORITHM,
     )
 
+
 def decode_token(token: str) -> dict:
 
     decoded = jwt.decode(token, settings.SECRET_KEY, algorithms=[settings.ALGORITHM])
     return decoded
-
