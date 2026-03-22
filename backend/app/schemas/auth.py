@@ -7,13 +7,17 @@ class OTPRequest(BaseModel):
         min_length=8,
         max_length=20,
         description="Номер телефона для получения кода",
-        example="79998887766",
+        json_schema_extra={"example": "79998887766"},
     )
 
 
 class OTPVerifyRequest(OTPRequest):
     code: str = Field(
-        ..., min_length=6, max_length=6, description="6-значный код из SMS", example="123456"
+        ...,
+        min_length=6,
+        max_length=6,
+        description="6-значный код из SMS",
+        json_schema_extra={"example": "123456"},
     )
 
 

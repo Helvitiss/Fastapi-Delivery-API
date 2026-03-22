@@ -14,8 +14,18 @@ class CartUpdate(BaseModel): ...
 
 
 class CartItemCreate(BaseModel):
-    dish_id: int = Field(..., gt=0, description="ID блюда", example=1)
-    quantity: int = Field(default=1, ge=1, description="Количество порций", example=2)
+    dish_id: int = Field(
+        ...,
+        gt=0,
+        description="ID блюда",
+        json_schema_extra={"example": 1},
+    )
+    quantity: int = Field(
+        default=1,
+        ge=1,
+        description="Количество порций",
+        json_schema_extra={"example": 2},
+    )
 
 
 class CartItemRead(BaseModel):
