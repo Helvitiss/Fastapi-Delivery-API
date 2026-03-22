@@ -10,7 +10,10 @@ from app.models.user import UserModel
 
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(
-        description="Создаёт администратора или повышает существующего пользователя по номеру телефона.",
+        description=(
+            "Создаёт администратора или повышает существующего пользователя "
+            "по номеру телефона."
+        ),
     )
     parser.add_argument(
         "phone",
@@ -51,7 +54,8 @@ async def main() -> None:
 
     action = "создан" if created else "обновлён"
     print(
-        f"Администратор {action}: id={user.id}, phone={user.phone}, role={user.role}, name={user.name}"
+        f"Администратор {action}: "
+        f"id={user.id}, phone={user.phone}, role={user.role}, name={user.name}"
     )
 
 
